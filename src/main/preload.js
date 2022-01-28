@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const mm = require('music-metadata');
+const fs = require('fs');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -21,5 +22,6 @@ contextBridge.exposeInMainWorld('electron', {
       }
     },
   },
-  mm: mm,
+  mm,
+  fs,
 });
