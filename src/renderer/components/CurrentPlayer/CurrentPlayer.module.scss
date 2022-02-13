@@ -1,0 +1,286 @@
+// mixins
+@mixin flexCenter($direction) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: center;
+  justify-content: center;
+}
+
+@function paddingLevel($level) {
+  @return $level / 13.66;
+}
+
+@mixin muiRoundButton($padSize) {
+  min-width: 0;
+  min-height: 0;
+  padding: paddingLevel($padSize) + vw;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  border: 0.0732vw solid transparent;
+  transition: 100ms ease;
+
+  &:hover {
+    transition: 100ms ease;
+  }
+
+  &>span {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+$current-player-height: 93px;
+
+/* Container */
+.currentPlayer {
+  padding: 0 1vw;
+  height: $current-player-height;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+}
+
+/* Progress Bar Tooltip */
+.toolTip {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  height: 50px;
+  z-index: -1;
+
+  &>div {
+    --container-width: 50px;
+    position: absolute;
+    height: 40px;
+    width: var(--container-width);
+    background: transparent;
+    transition: 200ms ease;
+    transition-property: opacity, transform;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 5px 0 0 0;
+
+    &>div:nth-child(1) {
+      height: 25px;
+      width: 100%;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: small;
+    }
+
+    &>div:nth-child(2) {
+      --size-vertical: 5px;
+      --size-horizontal: 10px;
+      width: var(--size-horizontal);
+      height: var(--size-vertical);
+      border: solid transparent;
+      border-width: var(--size-vertical) calc(var(--size-horizontal) / 2) 0;
+    }
+  }
+
+  [hidden] {
+    opacity: 0;
+    // top: 10px;
+    transform: scale(0);
+  }
+}
+
+/* Album Art Styles */
+.albumArt {
+  @include flexCenter(row);
+  margin: 0 0.45vw 0 0.8vw;
+  height: 4.4vw;
+  min-width: 4.4vw;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 13px 5px rgba(0, 0, 0, 0.5);
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Song Details */
+.songDetails {
+  margin: auto 0.45vw;
+  min-width: 150px;
+  width: 12vw;
+  height: 38.7%;
+
+  display: grid;
+  grid-template-rows: 5fr 4fr;
+
+  & > div:nth-child(1) {
+    font-size: 0.85rem;
+  }
+
+  & > div:nth-child(2) {
+    font-size: 0.65rem;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-line: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Playback Buttons */
+.playBackController {
+  height: $current-player-height / 2;
+  width: 17vw;
+  min-width: 200px;
+
+  @include flexCenter(row);
+  justify-content: space-evenly;
+
+  div {
+    @include flexCenter(row);
+    height: 100%;
+  }
+
+  div:nth-child(1),
+  div:nth-child(2),
+  div:nth-child(4),
+  div:nth-child(5) {
+    width: 14.7%;
+
+    button {
+      @include muiRoundButton(8);
+      &:hover {
+        opacity: 0.8;
+        background-color: rgba(100%, 100%, 100%, 0.21);
+        box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+
+  div:nth-child(3) {
+    width: $current-player-height / 2;
+
+    button {
+      @include muiRoundButton(2);
+      border: none;
+      background-color: transparent;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+      }
+
+      &:active {
+        transform: initial;
+      }
+    }
+  }
+}
+
+/* Time Display */
+.timeDisplay {
+  font-size: 0.8rem;
+}
+
+.currentPlayer {
+  $margin: 2ch;
+
+  div:nth-child(5).timeDisplay {
+    margin-left: $margin;
+  }
+
+  div:nth-child(7).timeDisplay {
+    margin-right: $margin;
+  }
+}
+
+/* Progress Bar */
+.progressBar {
+  @include flexCenter(row);
+
+  min-width: 350px;
+  height: 100%;
+
+  flex-grow: 1;
+
+  position: relative;
+  z-index: 0;
+
+  canvas {
+    width: 100%;
+    height: 60%;
+  }
+
+}
+
+/* Volume Control */
+.volumeController {
+  height: 35%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 11vw;
+
+  button {
+    @include muiRoundButton(6);
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 10%;
+
+    &:hover {
+      opacity: 0.8;
+      background-color: rgba(100%, 100%, 100%, 0.21);
+      box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  :global {
+    .MuiSlider-root {
+      width: 70%;
+    }
+
+    .MuiSlider-thumb {
+      height: 0;
+      width: 0;
+
+      &:hover {
+        width: 10px;
+        height: 10px;
+        box-shadow: none;
+        filter: drop-shadow(2px 4px 6px black);
+      }
+    }
+
+    .MuiSlider-rail {
+      transition: 200ms ease;
+    }
+
+    .MuiSlider-root:hover .MuiSlider-rail {
+      box-shadow: 0 0 10px 5px black;
+    }
+
+    .MuiSlider-valueLabel {
+      border-radius: 20%;
+      background-color: white;
+      color: black;
+    }
+  }
+
+  &[attr-muted=yes]>span {
+    filter: saturate(0);
+  }
+}

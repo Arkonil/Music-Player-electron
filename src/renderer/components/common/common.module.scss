@@ -1,0 +1,29 @@
+/* Animated Text styles */
+.text {
+  overflow: hidden;
+  width: 100%;
+
+  div {
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  [data-animation=off] {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: top;
+  }
+}
+
+/* Time Display styles */
+.timeDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    min-width: 7ch;
+    text-align: center;
+  }
+}
