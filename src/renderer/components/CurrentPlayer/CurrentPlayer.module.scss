@@ -52,6 +52,7 @@ $current-player-height: 93px;
   top: 0;
   left: 0;
   height: 50px;
+  z-index: -1;
 
   &>div {
     --container-width: 50px;
