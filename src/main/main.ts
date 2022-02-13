@@ -11,7 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, Notification } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Notification, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -67,7 +67,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
+    width: 1100,
+    minWidth: 1080,
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
@@ -132,4 +133,20 @@ app
 
 ipcMain.on('notify', (_event: Electron.IpcMainEvent, message: string) => {
   new Notification({title: 'Music Player', body: message}).show();
+})
+
+ipcMain.on('select-file', async (event: Electron.IpcMainEvent) => {
+  if (mainWindow !== null) {
+    const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
+      title: 'Open Audio File',
+      defaultPath: 'E:/',
+      buttonLabel: 'Open',
+      filters: [{ name: 'Audio', extensions: ['mp3', 'wav'] }],
+      properties: ['openFile', 'showHiddenFiles'],
+    });
+    if (!canceled) {
+      console.log(filePaths);
+      event.sender.send('file-selected', filePaths);
+    }
+  }
 })

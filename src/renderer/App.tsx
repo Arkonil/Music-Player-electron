@@ -1,50 +1,30 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
-import './App.css';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+// import icon from '../../assets/icon.svg';
+import './style/App.module.scss';
+import Parent from './components/CurrentPlayer/Parent';
+// import Parent from './experiment/Parent';
 
-const Hello = () => {
-  return (
-    <div>
-      <div className="Hello">
-        <img width="200px" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
-    </div>
-  );
-};
+import ThemeProvider from './components/contexts/ThemeContext';
+
+declare global {
+  interface Window {
+    electron: {
+      ipcRenderer: any;
+      mm: any;
+      fs: any;
+      utils: {
+        uint8toBase64: (array: Uint8Array | Float32Array) => string;
+      };
+    };
+  }
+}
 
 export default function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Hello />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Parent />
+    </ThemeProvider>
   );
+  // return <div />;
 }
