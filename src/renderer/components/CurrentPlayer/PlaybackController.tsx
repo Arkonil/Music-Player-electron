@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import Color from '../common/Color';
 
 import * as Icons from '../Icons/Icon';
-import MediaButton from '../../../../MediaButton';
+import MediaButton from './MediaButton';
 import PlayPauseButton from './PlayPauseButton';
 
 import { ThemeContext } from '../contexts/ThemeContext';
