@@ -34,12 +34,10 @@ function SongDetails({ songTitle, songArtists, className }: PropType) {
       ) : (
         <Text animate>
           {songArtists.map((item, index) => (
-            <>
-              {index ? ', ' : ''}
-              <Link key={item.name} href={item.link ?? '#'}>
-                {item.name}
-              </Link>
-            </>
+            // eslint-disable-next-line react/no-array-index-key
+            <Link key={index} href={item.link ?? '#'}>
+              {item.name}
+            </Link>
           ))}
         </Text>
       )}
