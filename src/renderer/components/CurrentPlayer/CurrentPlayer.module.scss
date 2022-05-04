@@ -136,6 +136,12 @@ $current-player-height: 93px;
     &:hover {
       text-decoration: underline;
     }
+
+    &:not(:first-child)::before {
+      content: ",\00A0";
+      display: inline-block;
+      text-decoration: none;
+    }
   }
 }
 

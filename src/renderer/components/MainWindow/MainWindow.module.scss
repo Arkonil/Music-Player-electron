@@ -1,0 +1,17 @@
+.mainWindow {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.navBar {
+  resize: horizontal;
+  overflow: hidden;
+  min-height: 100%;
+  background-color: aqua;
+  min-width: 15vw;
+}
+
+.contentWindow {
+  display: block;
+}
