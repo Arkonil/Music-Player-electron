@@ -4,7 +4,7 @@ import Text from '../common/Text';
 import Link from '../common/Link';
 
 type LinkText = {
-  name: string;
+  text: string;
   link?: string;
 };
 
@@ -24,7 +24,7 @@ function SongDetails({ songTitle, songArtists, className }: PropType) {
         </Text>
       ) : (
         <Text animate>
-          <Link href={songTitle.link ?? '#'}>{songTitle.name}</Link>
+          <Link href={songTitle.link ?? '#'}>{songTitle.text}</Link>
         </Text>
       )}
       {typeof songArtists === 'string' ? (
@@ -36,7 +36,7 @@ function SongDetails({ songTitle, songArtists, className }: PropType) {
           {songArtists.map((item, index) => (
             // eslint-disable-next-line react/no-array-index-key
             <Link key={index} href={item.link ?? '#'}>
-              {item.name}
+              {item.text}
             </Link>
           ))}
         </Text>

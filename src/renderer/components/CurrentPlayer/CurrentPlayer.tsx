@@ -12,7 +12,7 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import classes from './CurrentPlayer.module.scss';
 
 type LinkText = {
-  name: string;
+  text: string;
   link?: string;
 };
 
@@ -95,9 +95,9 @@ function CurrentPlayer({ source, onNext, onPrev}: PropType) {
         .then((rawData: IAudioMetadata) => {
           setSong({
             // title: rawData.common.title ?? '',
-            title: {name: rawData.common.title ?? '', link: '#'},
+            title: {text: rawData.common.title ?? '', link: '#'},
             // artists: rawData.common.artist ?? '',
-            artists: rawData.common.artists?.map((name) => ({name, link: '#'})) ?? 'No Artist',
+            artists: rawData.common.artists?.map((text) => ({text, link: '#'})) ?? 'No Artist',
             duration: rawData.format.duration || audio.current.duration || 0,
           });
           let pictureData;
