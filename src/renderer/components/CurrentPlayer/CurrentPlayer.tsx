@@ -18,9 +18,11 @@ type LinkText = {
 
 type PropType = {
   source: string;
+  onNext: () => void;
+  onPrev: () => void;
 };
 
-function CurrentPlayer({ source }: PropType) {
+function CurrentPlayer({ source, onNext, onPrev}: PropType) {
   const theme = useContext(ThemeContext);
 
   const [volume, setVolume] = useState(0.5); // Set initial volume
@@ -184,8 +186,8 @@ function CurrentPlayer({ source }: PropType) {
     }
   }, [onPause, onPlay, playing]);
 
-  const handlePrevBtnClick = useCallback(() => {}, []);
-  const handleNextBtnClick = useCallback(() => {}, []);
+  const handlePrevBtnClick = onPrev;
+  const handleNextBtnClick = onNext;
 
   const handleVolumeChange = useCallback((value: number) => {
     try {
