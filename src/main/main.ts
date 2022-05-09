@@ -135,18 +135,23 @@ ipcMain.on('notify', (_event: Electron.IpcMainEvent, message: string) => {
   new Notification({title: 'Music Player', body: message}).show();
 })
 
-ipcMain.on('select-file', async (event: Electron.IpcMainEvent) => {
+ipcMain.on('select-songs', async (event: Electron.IpcMainEvent) => {
   if (mainWindow !== null) {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      title: 'Open Audio File',
-      defaultPath: 'E:/',
-      buttonLabel: 'Open',
+      title: 'Select Songs',
+      defaultPath: 'E:/Music',
+      buttonLabel: 'Select',
       filters: [{ name: 'Audio', extensions: ['mp3', 'wav'] }],
-      properties: ['openFile', 'showHiddenFiles'],
+      properties: [
+        'openFile',
+        'multiSelections',
+        // 'showHiddenFiles',
+        'dontAddToRecent',
+      ],
     });
     if (!canceled) {
       console.log(filePaths);
-      event.sender.send('file-selected', filePaths);
+      event.sender.send('songs-selected', filePaths);
     }
   }
 })
