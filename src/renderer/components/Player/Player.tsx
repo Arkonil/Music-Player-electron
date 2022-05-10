@@ -9,7 +9,7 @@ import TimeDisplay from '../common/TimeDisplay';
 import VolumeControl from './VolumeControl';
 
 import { ThemeContext } from '../contexts/ThemeContext';
-import classes from './CurrentPlayer.module.scss';
+import classes from './PlayerStyles.module.scss';
 
 type LinkText = {
   text: string;

@@ -6,7 +6,7 @@ import MediaButton from './MediaButton';
 import PlayPauseButton from './PlayPauseButton';
 
 import { ThemeContext } from '../contexts/ThemeContext';
-import classes from './CurrentPlayer.module.scss';
+import classes from './PlayerStyles.module.scss';
 
 type PropType = {
   onShuffleButtonClick: () => void;

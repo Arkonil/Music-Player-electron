@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useRef, useEffect, useContext } from 'react';
 import { toOpacityString, toSaturationString } from '../common/Color';
-import classes from './CurrentPlayer.module.scss';
+import classes from './PlayerStyles.module.scss';
 import { ThemeContext } from '../contexts/ThemeContext';
 
 type DrawingTools = {

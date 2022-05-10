@@ -3,7 +3,7 @@ import { Button, Slider } from '@mui/material';
 import * as Icons from '../Icons/Icon';
 
 import { ThemeContext } from '../contexts/ThemeContext';
-import classes from './CurrentPlayer.module.scss';
+import classes from './PlayerStyles.module.scss';
 
 type ControllerProps = {
   volume: number;
