@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import CurrentPlayer from './CurrentPlayer';
+import CurrentPlayer from './Player';
 
 class CircularArray<T> extends Array<T> {
   circularAt(i: number): T {
