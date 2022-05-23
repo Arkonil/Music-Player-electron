@@ -1,287 +1,311 @@
-import { useEffect, useRef, useState, useCallback, useContext } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { IAudioMetadata } from 'music-metadata';
+// import Components
+import ToolTip from './ToolTip';
 import AlbumArt from './AlbumArt';
 import SongDetails from './SongDetails';
-import PlayBackController from './PlaybackController';
-import ProgressBar from './ProgressBar';
+import PlaybackController from './PlaybackController';
 import TimeDisplay from '../common/TimeDisplay';
+import ProgressBar from './ProgressBar';
 import VolumeControl from './VolumeControl';
 
-import { ThemeContext } from '../contexts/ThemeContext';
+// context
+import {
+  useAudioState,
+  useAudioStateUpdater,
+} from '../contexts/AudioStateContext';
+import { useTheme } from '../contexts/ThemeContext';
+
+// import styles
 import classes from './PlayerStyles.module.scss';
 
-type LinkText = {
-  text: string;
-  link?: string;
-};
+interface PlayerProps {
+  song: MusicPlayer.Song;
+  shouldPlay: boolean;
+  onPreviousSong: () => void;
+  onNextSong: (repeat?: boolean) => boolean;
+}
 
-type PropType = {
-  source: string;
-  onNext: () => void;
-  onPrev: () => void;
-};
+function Player({
+  song,
+  shouldPlay,
+  onPreviousSong,
+  onNextSong,
+}: PlayerProps): JSX.Element {
+  // contexts
+  const audioState = useAudioState();
+  const audioStateUpdater = useAudioStateUpdater();
+  const { theme } = useTheme();
 
-function CurrentPlayer({ source, onNext, onPrev}: PropType) {
-  const theme = useContext(ThemeContext);
-
-  const [volume, setVolume] = useState(0.5); // Set initial volume
-  const [muted, setMuted] = useState(false); // Set initial mute state
-
-  const audio = useRef(new Audio());
-  const audioCtx = useRef(new AudioContext());
-  // audio.current.autoplay = true;
-  audio.current.volume = volume;
-  audio.current.muted = muted;
-
+  // DOM Refs
   const toolTipRef = useRef(document.createElement('div'));
-  const shouldRecalculate = useRef(true);
-  const timeout = useRef(setTimeout(() => {}, 0));
-  const interval = useRef<number>();
 
-  const [albumArt, setAlbumArt] = useState('');
-  const [song, setSong] = useState<{title: string | LinkText, artists: string | LinkText[], duration: number}>({ title: '', artists: '', duration: 0 });
-  const [playing, setPlaying] = useState(false);
-  const [shuffle, setShuffle] = useState(false);
-  const [repeatState, setRepeatState] = useState('off');
+  // import from a settings.json file
+  const [repeat, setRepeat] = useState<'off' | 'all' | 'one'>('off');
+  const [volume, setVolume] = useState(0.5);
+  const [isMuted, setMuted] = useState(false);
 
+  const [currentProgress, setCurrentProgress] = useState<number>(0);
+
+  // Audio Player
+  const audioElementRef = useRef(new Audio());
+  audioElementRef.current.volume = volume;
+  audioElementRef.current.muted = isMuted;
+  // audioElementRef.current.autoplay = true;
+  const audioContext = useRef(new AudioContext());
   const [arrayData, setArrayData] = useState(new Float32Array(1000));
-  const [currentProgress, setCurrentProgress] = useState(
-    audio.current.currentTime
-  );
+  const shouldRecalculate = useRef(true);
 
-  const handleTooltip = (
-    e: React.MouseEvent<HTMLCanvasElement>,
-    value: number,
-    isMouseOver: boolean
-  ) => {
-    if (!isMouseOver) {
-      toolTipRef.current.hidden = true;
-    } else {
-      toolTipRef.current.hidden = false;
-      const position = e.pageX / document.body.clientWidth;
+  const handleShuffleButtonClick = useCallback(() => {
+    console.debug('handleShuffleButtonClick called');
+    audioStateUpdater.toggleShuffle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-      toolTipRef.current.style.left = `calc(${100 * position}% - ${
-        toolTipRef.current.clientWidth / 2
-      }px)`;
-
-      const seconds = Math.round(value * song.duration || 0);
-      const date = new Date(seconds * 1000);
-      let displayString = '';
-      if (seconds > 3600) {
-        displayString = date.toISOString().substring(11, 19);
-      } else {
-        displayString = date.toISOString().substring(14, 19);
-      }
-      toolTipRef.current.children[0].textContent = displayString;
-    }
-  };
-
-  const changeProgressTo = (value: number) => {
-    if (song.duration) {
-      clearTimeout(timeout.current);
-      timeout.current = setTimeout(() => {
-        audio.current.currentTime = value * audio.current.duration;
-        setCurrentProgress(audio.current.currentTime);
-      }, 0);
-    }
-  };
-
-  const loadSong = useCallback(
-    async (filePath: string) => {
-      // Metadata Loading
-      window.electron.mm
-        .parseFile(filePath)
-        .then((rawData: IAudioMetadata) => {
-          setSong({
-            // title: rawData.common.title ?? '',
-            title: {text: rawData.common.title ?? '', link: '#'},
-            // artists: rawData.common.artist ?? '',
-            artists: rawData.common.artists?.map((text) => ({text, link: '#'})) ?? 'No Artist',
-            duration: rawData.format.duration || audio.current.duration || 0,
-          });
-          let pictureData;
-          if (rawData.common.picture) {
-            pictureData = `data:${
-              rawData.common.picture[0].format
-            };base64,${window.electron.utils.uint8toBase64(
-              rawData.common.picture[0].data
-            )}`;
-          } else {
-            pictureData = '';
-          }
-          setAlbumArt(pictureData);
-          return rawData;
-        })
-        .catch((err: Error) => {
-          console.error(err);
-        });
-
-      // Audio Data Loading
-      const u8array: Uint8Array = window.electron.fs.readFileSync(filePath);
-      audio.current.src = window.URL.createObjectURL(
-        new Blob([u8array.buffer], { type: 'audio/mp3' })
-      );
-      if (playing) {
-        audio.current.play();
-      }
-      // audio.current.play();
-      // setPlaying(true);
-      audioCtx.current
-        .decodeAudioData(u8array.buffer)
-        .then((audioBuffer) => {
-          if (audioBuffer.numberOfChannels === 2) {
-            const channel1 = new Float32Array(audioBuffer.length);
-            const channel2 = new Float32Array(audioBuffer.length);
-            const array = new Float32Array(audioBuffer.length);
-            audioBuffer.copyFromChannel(channel1, 0);
-            audioBuffer.copyFromChannel(channel2, 1);
-            let i = audioBuffer.length;
-            while (i--) {
-              array[i] = 0.5 * (channel1[i] + channel2[i]);
-            }
-            shouldRecalculate.current = true;
-            setArrayData(array);
-          }
-          return audioBuffer;
-        })
-        .catch(console.log);
-    },
-    [playing]
-  );
-
-  const onPlay = useCallback(async () => {
-    await audio.current.play();
-    setPlaying(true);
+  const onPlay = useCallback(() => {
+    console.debug('onPlay called');
+    audioElementRef.current
+      .play()
+      .then(() => {
+        audioStateUpdater.togglePlaying(true);
+        return null;
+      })
+      .catch((error) => {
+        console.error('Error playing audio', error);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPause = useCallback(() => {
-    audio.current.pause();
-    setPlaying(false);
-  }, []);
-
-  const handleShuffleButtonClick = useCallback(() => {
-    setShuffle((prevState) => !prevState);
-  }, []);
-
-  const handleRepeatButtonClick = useCallback(() => {
-    setRepeatState((prevState) => {
-      if (prevState === 'all') {
-        audio.current.loop = true;
-        return 'one';
-      }
-      audio.current.loop = false;
-      if (prevState === 'off') return 'all';
-      return 'off';
-    });
+    console.debug('onPause called');
+    audioElementRef.current.pause();
+    audioStateUpdater.togglePlaying(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAudioStateChange = useCallback(() => {
-    if (playing) {
-      console.log('pausing song');
+    console.debug('handleAudioStateChange called');
+    if (audioState.isPlaying) {
       onPause();
-    } else if (audio.current.readyState >= 2) {
-      console.log('playing song');
+    } else {
       onPlay();
     }
-  }, [onPause, onPlay, playing]);
+  }, [audioState.isPlaying, onPause, onPlay]);
 
-  const handlePrevBtnClick = onPrev;
-  const handleNextBtnClick = onNext;
+  const handleRepeatButtonClick = useCallback(async () => {
+    console.debug('handleRepeatButtonClick called');
+    // off -> all -> one -> off
+    setRepeat((prevState) => {
+      switch (prevState) {
+        case 'all':
+          audioElementRef.current.loop = true;
+          return 'one';
+        case 'one':
+          audioElementRef.current.loop = false;
+          return 'off';
+        case 'off':
+          audioElementRef.current.loop = false;
+          return 'all';
+        default:
+          console.error(`Repeat State have illegal value: ${prevState}`);
+          return 'off';
+      }
+    });
+  }, []);
+
+  const changeProgressTo = useCallback(async (value: number) => {
+    console.debug('changeProgressTo called');
+    if (audioElementRef.current.duration) {
+      audioElementRef.current.currentTime =
+        value * audioElementRef.current.duration;
+      setCurrentProgress(audioElementRef.current.currentTime);
+    }
+  }, []);
+
+  const handleTooltip = useCallback(
+    async (
+      e: React.MouseEvent<HTMLCanvasElement>,
+      value: number,
+      isMouseOver: boolean
+    ) => {
+      if (!isMouseOver) {
+        toolTipRef.current.hidden = true;
+      } else {
+        toolTipRef.current.hidden = false;
+        const position = e.pageX / document.body.clientWidth;
+
+        toolTipRef.current.style.left = `calc(${100 * position}% - ${
+          toolTipRef.current.clientWidth / 2
+        }px)`;
+
+        const seconds = Math.round(
+          value * audioElementRef.current.duration || 0
+        );
+        const date = new Date(seconds * 1000);
+        let displayString = '';
+        if (seconds > 3600) {
+          displayString = date.toISOString().substring(11, 19);
+        } else {
+          displayString = date.toISOString().substring(14, 19);
+        }
+        toolTipRef.current.children[0].textContent = displayString;
+      }
+    },
+    []
+  );
 
   const handleVolumeChange = useCallback((value: number) => {
+    console.debug('handleVolumeChange called');
     try {
-      audio.current.volume = value;
+      audioElementRef.current.volume = value;
       setVolume(value);
     } catch (error) {
       console.error({ value, error });
     }
   }, []);
+
   const handleMutedChange = useCallback(() => {
-    audio.current.muted = !audio.current.muted;
-    setMuted(audio.current.muted);
+    console.debug('handleMutedChange called');
+    audioElementRef.current.muted = !audioElementRef.current.muted;
+    setMuted(audioElementRef.current.muted);
   }, []);
 
-  useEffect(() => {
-    if (source) {
-      loadSong(source);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source]);
-
+  // For disabling recalculate in every rendering
   useEffect(() => {
     shouldRecalculate.current = false;
   });
 
+  // On Song End event
   useEffect(() => {
-    audio.current.addEventListener('play', () => {
+    console.debug('On Song End event');
+    const audioElement = audioElementRef.current;
+
+    function handleSongEnd() {
+      if (repeat === 'all') {
+        onNextSong(true);
+        onPlay();
+      } else if (repeat === 'off') {
+        const sp = onNextSong(false)
+        if (!sp) {
+          audioStateUpdater.togglePlaying(false)
+        }
+      }
+      changeProgressTo(0);
+    }
+
+    audioElement.addEventListener('ended', handleSongEnd);
+    return () => {
+      audioElement.removeEventListener('ended', handleSongEnd);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [changeProgressTo, onNextSong, onPlay, repeat, shouldPlay]);
+
+  const loadSong = useCallback(async (path: string) => {
+    console.debug('LoadSong called');
+    const audioElement = audioElementRef.current;
+    const data = await window.electron.loadSongDataFromPath(path);
+    // console.log(data);
+
+    audioElement.src = window.URL.createObjectURL(
+      new Blob([data.buffer], { type: 'audio/mp3' })
+    );
+    audioContext.current
+      .decodeAudioData(data.buffer)
+      .then((audioBuffer) => {
+        if (audioBuffer.numberOfChannels === 2) {
+          const channel1 = new Float32Array(audioBuffer.length);
+          const channel2 = new Float32Array(audioBuffer.length);
+          const array = new Float32Array(audioBuffer.length);
+          audioBuffer.copyFromChannel(channel1, 0);
+          audioBuffer.copyFromChannel(channel2, 1);
+          let i = audioBuffer.length;
+          while (i--) {
+            array[i] = 0.5 * (channel1[i] + channel2[i]);
+          }
+          shouldRecalculate.current = true;
+          setArrayData(array);
+        }
+        return audioBuffer;
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  // Loading Song
+  useEffect(() => {
+    console.debug('Loading Song');
+    if (song.url) {
+      Promise.race([loadSong(song.url)])
+        .then(() => shouldPlay && onPlay())
+        .catch(console.error);
+      // loadSong(song.url);
+      // onPlay();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadSong, onPlay, song.url]);
+
+  // Timer
+  const interval = useRef<number>(0);
+
+  useEffect(() => {
+    console.debug('Timer');
+    const audioElement = audioElementRef.current;
+
+    function endInterval() {
       clearInterval(interval.current);
+    }
+    function startInterval() {
+      endInterval();
       interval.current = window.setInterval(() => {
-        setCurrentProgress(audio.current.currentTime);
+        setCurrentProgress(audioElement.currentTime);
       }, 1000);
-    });
+    }
 
-    audio.current.addEventListener('pause', () => {
-      clearInterval(interval.current);
-    });
-
-    audio.current.addEventListener('ended', () => {
-      console.log('song ended');
-      clearInterval(interval.current);
-      setCurrentProgress(0);
-      setPlaying(false);
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    audioElement.addEventListener('play', startInterval);
+    audioElement.addEventListener('pause', endInterval);
+    return () => {
+      audioElement.removeEventListener('play', startInterval);
+      audioElement.removeEventListener('pause', endInterval);
+    };
   }, []);
 
   return (
     <div
-      className={classes.currentPlayer}
+      className={classes.player}
       style={{
-        backgroundColor: theme.colors.backgroundColor,
         color: theme.colors.fontColor,
+        backgroundColor: theme.colors.backgroundColor,
       }}
     >
-      <div className={classes.toolTip}>
-        <div ref={toolTipRef} hidden>
-          <div style={{backgroundColor: theme.colors.toolTipColor, color: 'black'}}/>
-          <div style={{borderTopColor: theme.colors.toolTipColor}}/>
-        </div>
-      </div>
-
-      <AlbumArt source={albumArt} className={classes.albumArt} />
-
-      <SongDetails
-        songTitle={song.title}
-        songArtists={song.artists}
-        className={classes.songDetails}
-      />
-      <PlayBackController
+      <ToolTip ref={toolTipRef} />
+      <AlbumArt source={song.album?.albumArt} />
+      <SongDetails song={song} />
+      <PlaybackController
+        isShuffleOn={audioState.shuffleEnabled}
         onShuffleButtonClick={handleShuffleButtonClick}
-        onPreviousButtonClick={handlePrevBtnClick}
-        onNextButtonClick={handleNextBtnClick}
-        onRepeatButtonClick={handleRepeatButtonClick}
+        onPreviousButtonClick={onPreviousSong}
+        isPlaying={audioState.isPlaying}
         onAudioStateChange={handleAudioStateChange}
-        isPlaying={playing}
-        isShuffleOn={shuffle}
-        repeatState={repeatState}
+        onNextButtonClick={onNextSong}
+        repeatState={repeat}
+        onRepeatButtonClick={handleRepeatButtonClick}
       />
-      <TimeDisplay className={classes.timeDisplay} seconds={currentProgress}/>
+      <TimeDisplay className={classes.timeDisplay} seconds={currentProgress} />
       <ProgressBar
         array={arrayData}
+        currentProgress={
+          currentProgress / audioElementRef.current.duration || 0
+        }
         shouldRecalculate={shouldRecalculate.current}
-        currentProgress={currentProgress / song.duration || 0}
         onChange={changeProgressTo}
-        barGap={1}
-        barWidth={2}
-        shadowLength={0.5}
         toolTipHandler={handleTooltip}
       />
-      <TimeDisplay className={classes.timeDisplay} seconds={song.duration}/>
+      <TimeDisplay
+        className={classes.timeDisplay}
+        seconds={audioElementRef.current.duration}
+      />
       <VolumeControl
         volume={volume}
-        muted={muted}
+        muted={isMuted}
         onVolumeChange={handleVolumeChange}
         onMutedChange={handleMutedChange}
       />
@@ -289,4 +313,5 @@ function CurrentPlayer({ source, onNext, onPrev}: PropType) {
   );
 }
 
-export default CurrentPlayer;
+// export default React.memo(Player);
+export default Player;
