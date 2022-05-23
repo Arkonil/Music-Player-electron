@@ -22,7 +22,7 @@ export function useAudioStateUpdater() {
   return useContext(AudioStateUpdateContext);
 }
 
-export function AudioStateProvider({ children }: OnlyChildrenProp) {
+export default function AudioStateProvider({ children }: OnlyChildrenProp) {
   const [isPlaying, setPlaying] = useState(false);
   const [shuffleEnabled, setShuffleEnabled] = useState(false);
 
