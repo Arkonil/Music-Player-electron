@@ -1,44 +1,49 @@
-import React, { useState } from 'react';
-// import Color from '../common/Color';
+import React, { useState, useCallback, useContext } from 'react';
 
-const darkTheme = {
-  colors: {
-    backgroundColor: 'hsl(233, 38%, 13%)',
-    primaryColor: 'hsl(332, 76%, 53%)',
-    secondaryColor: 'hsl(0, 100%, 100%)',
-    fontColor: 'hsl(0, 100%, 100%)',
-    mainColor: '#000000',
-    toolTipColor: 'rgb(255, 255, 255)',
+const themes = {
+  dark: {
+    colors: {
+      backgroundColor: 'hsl(233, 38%, 13%)',
+      primaryColor: 'hsl(332, 76%, 53%)',
+      secondaryColor: 'hsl(0, 100%, 100%)',
+      fontColor: 'hsl(0, 100%, 100%)',
+      mainColor: 'hsl(0, 0%, 0%)',
+      toolTipColor: 'rgb(255, 255, 255)',
+    },
+  },
+  light: {
+    colors: {
+      backgroundColor: 'hsl(233, 38%, 13%)',
+      primaryColor: 'hsl(332, 76%, 53%)',
+      secondaryColor: 'hsl(0, 100%, 100%)',
+      fontColor: 'hsl(0, 100%, 100%)',
+      mainColor: 'hsl(0, 0%, 100%)',
+      toolTipColor: 'rgb(117, 117, 117)',
+    },
   },
 };
 
-const lightTheme = {
-  colors: {
-    backgroundColor: 'hsl(233, 38%, 13%)',
-    primaryColor: 'hsl(332, 76%, 53%)',
-    secondaryColor: 'hsl(0, 100%, 100%)',
-    fontColor: 'hsl(0, 100%, 100%)',
-    mainColor: '#FFFFFF',
-    toolTipColor: 'rgb(117, 117, 117)',
-  },
-};
+type ThemeType = 'dark' | 'light';
 
-export const ThemeContext = React.createContext(darkTheme);
+export const ThemeContext = React.createContext({
+  theme: themes.dark,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setTheme: (_param: ThemeType) => {},
+});
 
-export function useTheme(state = true) {
-  const [isDark, setDark] = useState(state);
-  return [isDark, setDark];
+export function useTheme() {
+  return useContext(ThemeContext);
 }
 
-interface Prop {
-  children: React.ReactNode;
-}
+export default function ThemeProvider({ children }: OnlyChildrenProp) {
+  const [theme, setTheme] = useState(themes.dark);
 
-export default function ThemeProvider({ children }: Prop) {
-  const [isDark] = useTheme();
+  const themeUpdater = useCallback((param: ThemeType) => {
+    setTheme(themes[param]);
+  }, []);
 
   return (
-    <ThemeContext.Provider value={isDark ? darkTheme : lightTheme}>
+    <ThemeContext.Provider value={{ theme, setTheme: themeUpdater }}>
       {children}
     </ThemeContext.Provider>
   );
