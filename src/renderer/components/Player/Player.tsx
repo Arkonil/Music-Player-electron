@@ -32,6 +32,7 @@ function Player({
   onPreviousSong,
   onNextSong,
 }: PlayerProps): JSX.Element {
+  // #region Hooks and callbacks
   // contexts
   const audioState = useAudioState();
   const audioStateUpdater = useAudioStateUpdater();
@@ -267,6 +268,7 @@ function Player({
       audioElement.removeEventListener('pause', endInterval);
     };
   }, []);
+  // #endregion
 
   return (
     <div
