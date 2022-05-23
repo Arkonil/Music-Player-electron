@@ -1,48 +1,52 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import Text from '../common/Text';
+import classes from './PlayerStyles.module.scss';
+
+// Change to react-router
 import Link from '../common/Link';
 
-type LinkText = {
-  text: string;
-  link?: string;
-};
+interface SongDetailsProps {
+  song: MusicPlayer.Song;
+  className?: string;
+}
 
-type PropType = {
-  songTitle: LinkText | string;
-  songArtists: LinkText[] | string;
-  className: string;
-};
+function SongDetails({ song, className = '' }: SongDetailsProps) {
+  const artists: MusicPlayer.SongArtist[] = [song.mainArtist];
+  song.otherArtists?.forEach((artist) => {
+    if (artist.id !== song.mainArtist.id) {
+      artists.push(artist);
+    }
+  });
 
-function SongDetails({ songTitle, songArtists, className }: PropType) {
-  console.log('Rendering Song Details');
   return (
-    <div className={className}>
-      {typeof songTitle === 'string' ? (
-        <Text animate>
-          <Link href="#">{songTitle}</Link>
-        </Text>
-      ) : (
-        <Text animate>
-          <Link href={songTitle.link ?? '#'}>{songTitle.text}</Link>
-        </Text>
-      )}
-      {typeof songArtists === 'string' ? (
-        <Text animate>
-          <Link href="#">{songArtists}</Link>
-        </Text>
-      ) : (
-        <Text animate>
-          {songArtists.map((item, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <Link key={index} href={item.link ?? '#'}>
-              {item.text}
-            </Link>
-          ))}
-        </Text>
-      )}
+    <div className={`player__song_details ${classes.songDetails} ${className}`}>
+      <Text animate>
+        <Link to={song.id}>{song.title}</Link>
+      </Text>
+      <Text>
+        {artists.map((artist) => (
+          <Link key={artist.id} to={artist.id}>
+            {artist.name}
+          </Link>
+        ))}
+      </Text>
     </div>
   );
 }
 
-export default React.memo(SongDetails);
+SongDetails.defaultProps = {
+  className: '',
+};
+
+function propsAreEqual(
+  prevProps: SongDetailsProps,
+  nextProps: SongDetailsProps
+): boolean {
+  return (
+    prevProps.song.id === nextProps.song.id &&
+    prevProps.className === nextProps.className
+  );
+}
+
+export default React.memo(SongDetails, propsAreEqual);
