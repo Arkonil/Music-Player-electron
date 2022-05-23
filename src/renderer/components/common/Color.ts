@@ -201,7 +201,7 @@ class Color {
       hslColorDec.hue,
       hslColorDec.saturation,
       hslColorDec.lightness,
-      rgbColor.alpha !== undefined ? rgbColor.alpha : 1
+      rgbColor.alpha ?? 1
     );
     return color;
   }
@@ -430,13 +430,13 @@ Color.prototype.withChanges = function withChanges(changes: {
   alpha?: number;
 }): Color {
   return new Color(
-    changes.red !== undefined ? changes.red : this.red,
-    changes.green !== undefined ? changes.green : this.green,
-    changes.blue !== undefined ? changes.blue : this.blue,
-    changes.hue !== undefined ? changes.hue : this.hue,
-    changes.saturation !== undefined ? changes.saturation : this.saturation,
-    changes.lightness !== undefined ? changes.lightness : this.lightness,
-    changes.alpha !== undefined ? changes.alpha : this.alpha
+    changes.red        ?? this.red,
+    changes.green      ?? this.green,
+    changes.blue       ?? this.blue,
+    changes.hue        ?? this.hue,
+    changes.saturation ?? this.saturation,
+    changes.lightness  ?? this.lightness,
+    changes.alpha      ?? this.alpha
   );
 };
 
