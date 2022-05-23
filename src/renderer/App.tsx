@@ -6,7 +6,7 @@ import Parent from './components/Player/Parent';
 import ThemeProvider from './components/contexts/ThemeContext';
 import AudioStateProvider from './components/contexts/AudioStateContext';
 
-import './style/App.module.scss';
+import './style/App.scss';
 
 
 export default function App() {

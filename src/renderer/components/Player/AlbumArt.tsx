@@ -1,6 +1,6 @@
 import React from 'react';
 import image from '../../../../assets/album_art_placeholder.jpg';
-import classes from './PlayerStyles.module.scss';
+import classes from '../../style/Player.module.scss';
 
 type AlbumArtProps = {
   source: string | undefined;

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import Text from '../common/Text';
-import classes from './PlayerStyles.module.scss';
+import classes from '../../style/Player.module.scss';
 
 // Change to react-router
 import Link from '../common/Link';

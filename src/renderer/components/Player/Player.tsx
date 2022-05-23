@@ -17,7 +17,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 
 // import styles
-import classes from './PlayerStyles.module.scss';
+import classes from '../../style/Player.module.scss';
 
 interface PlayerProps {
   song: MusicPlayer.Song;

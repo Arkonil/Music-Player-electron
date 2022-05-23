@@ -5,7 +5,7 @@ import * as Icons from '../Icons/Icon';
 import MediaButton from './MediaButton';
 import PlayPauseButton from './PlayPauseButton';
 
-import classes from './PlayerStyles.module.scss';
+import classes from '../../style/Player.module.scss';
 import { useTheme } from '../contexts/ThemeContext';
 
 type PropType = {

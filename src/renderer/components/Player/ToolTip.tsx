@@ -1,5 +1,5 @@
 import React from 'react';
-import classes from './PlayerStyles.module.scss';
+import classes from '../../style/Player.module.scss';
 import { useTheme } from '../contexts/ThemeContext';
 
 const ToolTip = React.forwardRef(
