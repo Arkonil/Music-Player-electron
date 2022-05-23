@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
-const mm = require('music-metadata');
-const fs = require('fs');
+
+const {loadSongDataFromPath, loadSongMetaDataFromPath} = require('./node_func');
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -18,13 +18,13 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.once(channel, (event, ...args) => func(...args));
       }
     },
-    ...ipcRenderer
-  },
-  mm,
-  fs,
-  utils: {
-    uint8toBase64(array) {
-      return Buffer.from(array).toString('base64');
+    send(channel, ...args) {
+      const validChannels = ['select-songs'];
+      if (validChannels.includes(channel)) {
+        ipcRenderer.send(channel, ...args);
+      }
     }
-  }
+  },
+  loadSongDataFromPath,
+  loadSongMetaDataFromPath
 });
