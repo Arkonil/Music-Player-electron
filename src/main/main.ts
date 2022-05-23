@@ -12,18 +12,18 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain, Notification, dialog } from 'electron';
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
+// import { autoUpdater } from 'electron-updater';
+// import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-export default class AppUpdater {
-  constructor() {
-    log.transports.file.level = 'info';
-    autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
-  }
-}
+// export default class AppUpdater {
+//   constructor() {
+//     log.transports.file.level = 'info';
+//     autoUpdater.logger = log;
+//     autoUpdater.checkForUpdatesAndNotify();
+//   }
+// }
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -39,23 +39,23 @@ if (isDevelopment) {
   require('electron-debug')();
 }
 
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
+// const installExtensions = async () => {
+//   const installer = require('electron-devtools-installer');
+//   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
+//   const extensions = ['REACT_DEVELOPER_TOOLS'];
 
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload
-    )
-    .catch(console.log);
-};
+//   return installer
+//     .default(
+//       extensions.map((name) => installer[name]),
+//       forceDownload
+//     )
+//     .catch(console.log);
+// };
 
 const createWindow = async () => {
-  if (isDevelopment) {
-    await installExtensions();
-  }
+  // if (isDevelopment) {
+  //   await installExtensions();
+  // }
 
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
@@ -104,7 +104,7 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  // new AppUpdater();
 };
 
 /**
@@ -135,18 +135,23 @@ ipcMain.on('notify', (_event: Electron.IpcMainEvent, message: string) => {
   new Notification({title: 'Music Player', body: message}).show();
 })
 
-ipcMain.on('select-file', async (event: Electron.IpcMainEvent) => {
+ipcMain.on('select-songs', async (event: Electron.IpcMainEvent) => {
   if (mainWindow !== null) {
     const { canceled, filePaths } = await dialog.showOpenDialog(mainWindow, {
-      title: 'Open Audio File',
-      defaultPath: 'E:/',
-      buttonLabel: 'Open',
+      title: 'Select Songs',
+      defaultPath: 'E:/Music',
+      buttonLabel: 'Select',
       filters: [{ name: 'Audio', extensions: ['mp3', 'wav'] }],
-      properties: ['openFile', 'showHiddenFiles'],
+      properties: [
+        'openFile',
+        'multiSelections',
+        // 'showHiddenFiles',
+        'dontAddToRecent',
+      ],
     });
     if (!canceled) {
       console.log(filePaths);
-      event.sender.send('file-selected', filePaths);
+      event.sender.send('songs-selected', filePaths);
     }
   }
 })

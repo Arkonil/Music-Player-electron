@@ -1,10 +1,10 @@
 type PropType = {
   children: string;
-  href: string;
+  to: string;
 };
 
-const Link = ({ children, href }: PropType) => {
-  return <a href={href}>{children}</a>;
+const Link = ({ children, to }: PropType) => {
+  return <a href={to}>{children}</a>;
 };
 
 export default Link;

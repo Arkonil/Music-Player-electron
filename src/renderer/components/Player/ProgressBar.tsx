@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { toOpacityString, toSaturationString } from '../common/Color';
-import classes from './CurrentPlayer.module.scss';
-import { ThemeContext } from '../contexts/ThemeContext';
+import classes from './PlayerStyles.module.scss';
+import { useTheme } from '../contexts/ThemeContext';
 
 type DrawingTools = {
   canvas: HTMLCanvasElement;
@@ -45,6 +45,7 @@ const getSample = (
 };
 
 type PropType = {
+  className?: string;
   array: Float32Array;
   barGap?: number;
   barWidth?: number;
@@ -85,6 +86,7 @@ function ProgressBar({
   toolTipHandler,
   currentProgress,
   shouldRecalculate,
+  className = '',
   barGap = 1,
   padding = 10,
   barWidth = 1,
@@ -101,7 +103,7 @@ function ProgressBar({
   const mouseOnHandle = useRef(false);
   const progress = useRef(currentProgress);
 
-  const theme = useContext(ThemeContext);
+  const { theme } = useTheme();
   const colors = useRef({
     track: theme.colors.primaryColor,
     handle: theme.colors.secondaryColor,
@@ -404,7 +406,6 @@ function ProgressBar({
     };
 
     raf.current = requestAnimationFrame(moveToTarget);
-
   };
   const mouseEnterHandler = () => {
     isMouseOver.current = true;
@@ -527,7 +528,7 @@ function ProgressBar({
   window.addEventListener('resize', onResize);
 
   return (
-    <div className={classes.progressBar}>
+    <div className={`player__progress_bar ${classes.progressBar} ${className}`}>
       <canvas
         ref={canvasRef}
         onClick={mouseClickHandler}
@@ -542,6 +543,7 @@ function ProgressBar({
 }
 
 ProgressBar.defaultProps = {
+  className: '',
   barGap: 1,
   barWidth: 1,
   shadowLength: 0.5,

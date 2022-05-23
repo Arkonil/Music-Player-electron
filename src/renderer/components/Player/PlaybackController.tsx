@@ -1,12 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Color from '../common/Color';
 
 import * as Icons from '../Icons/Icon';
 import MediaButton from './MediaButton';
 import PlayPauseButton from './PlayPauseButton';
 
-import { ThemeContext } from '../contexts/ThemeContext';
-import classes from './CurrentPlayer.module.scss';
+import classes from './PlayerStyles.module.scss';
+import { useTheme } from '../contexts/ThemeContext';
 
 type PropType = {
   onShuffleButtonClick: () => void;
@@ -17,6 +17,7 @@ type PropType = {
   isPlaying: boolean;
   isShuffleOn: boolean;
   repeatState: string;
+  className?: string;
 };
 
 const nextRepeatState: { [key: string]: string } = {
@@ -26,6 +27,7 @@ const nextRepeatState: { [key: string]: string } = {
 };
 
 function PlaybackController({
+  className,
   onShuffleButtonClick,
   onPreviousButtonClick,
   onNextButtonClick,
@@ -35,8 +37,8 @@ function PlaybackController({
   isShuffleOn,
   repeatState,
 }: PropType) {
-  console.log('Rendering PlaybackController');
-  const theme = useContext(ThemeContext);
+  // console.log('Rendering PlaybackController');
+  const { theme } = useTheme();
 
   let RepeatIcon: React.FC<{ color: string | Color }>;
   switch (repeatState) {
@@ -51,13 +53,17 @@ function PlaybackController({
       throw new Error(`Invalid Argument: ${repeatState}`);
   }
   return (
-    <div className={classes.playBackController}>
+    <div
+      className={`player__controller ${classes.playBackController} ${className}`}
+    >
       {/* Shuffle Button */}
       <MediaButton
         toolTip={`${isShuffleOn ? 'Disable' : 'Enable'} Shuffle`}
         onClick={onShuffleButtonClick}
         IconComponent={Icons.ShuffleIcon}
-        color={isShuffleOn ? theme.colors.primaryColor : theme.colors.secondaryColor}
+        color={
+          isShuffleOn ? theme.colors.primaryColor : theme.colors.secondaryColor
+        }
       />
       {/* Previous Button */}
       <MediaButton
@@ -85,10 +91,18 @@ function PlaybackController({
         toolTip={`Repeat ${nextRepeatState[repeatState]}`}
         onClick={onRepeatButtonClick}
         IconComponent={RepeatIcon}
-        color={repeatState === 'off' ? theme.colors.secondaryColor : theme.colors.primaryColor}
+        color={
+          repeatState === 'off'
+            ? theme.colors.secondaryColor
+            : theme.colors.primaryColor
+        }
       />
     </div>
   );
 }
+
+PlaybackController.defaultProps = {
+  className: '',
+};
 
 export default React.memo(PlaybackController);

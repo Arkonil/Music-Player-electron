@@ -32,7 +32,7 @@
 $current-player-height: 93px;
 
 /* Container */
-.currentPlayer {
+.player {
   padding: 0 1vw;
   height: $current-player-height;
   width: 100%;
@@ -76,6 +76,7 @@ $current-player-height: 93px;
       justify-content: center;
       align-items: center;
       font-size: small;
+      font-weight: 500;
     }
 
     &>div:nth-child(2) {
@@ -90,8 +91,8 @@ $current-player-height: 93px;
 
   [hidden] {
     opacity: 0;
-    // top: 10px;
-    transform: scale(0);
+    // transform: translateY(10px);
+    transform: scale(0.5);
   }
 }
 
@@ -280,9 +281,21 @@ $current-player-height: 93px;
     }
 
     .MuiSlider-valueLabel {
-      border-radius: 20%;
       background-color: white;
+      border-radius: 5px;
+      height: 25px;
       color: black;
+      font-size: 13px;
+      // transition-duration: 2000ms;
+
+      // top: -10px;
+      // opacity: 0;
+      // transform: scale(0.5);
+    }
+
+    .MuiSlider-valueLabelOpen {
+      opacity: 1;
+      // transform: scale(1);
     }
   }
 

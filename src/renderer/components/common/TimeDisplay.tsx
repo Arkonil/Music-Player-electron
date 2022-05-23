@@ -1,17 +1,13 @@
+import React from 'react';
 import classes from './common.module.scss';
 
 type PropType = {
   seconds: number;
-  className: string;
-  style?: React.CSSProperties;
+  className?: string;
 };
 
-function TimeDisplay({
-  className,
-  seconds = 0,
-  style = {},
-}: PropType): JSX.Element {
-  const date = new Date(Math.round(seconds) * 1000);
+function TimeDisplay({ className, seconds = 0 }: PropType): JSX.Element {
+  const date = new Date(Math.round(seconds || 0) * 1000);
   let displayString = '';
   try {
     if (seconds > 3600) {
@@ -24,14 +20,14 @@ function TimeDisplay({
   }
 
   return (
-    <div className={`${classes.timeDisplay} ${className}`} style={style}>
+    <div className={`time_display ${classes.timeDisplay} ${className}`}>
       <span>{displayString}</span>
     </div>
   );
 }
 
 TimeDisplay.defaultProps = {
-  style: {},
+  className: '',
 };
 
-export default TimeDisplay;
+export default React.memo(TimeDisplay);

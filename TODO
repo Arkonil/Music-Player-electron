@@ -1,2 +1,5 @@
-resolve package issues ✅
-create new branches
+1. resolve package issues ✅
+2. create new branches ✅
+3. fix preload script ✅
+4. Clean Player.tsx ✅
+5. complete function for importing metadata ✅

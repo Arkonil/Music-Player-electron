@@ -14,6 +14,7 @@ module.exports = {
     'no-plusplus': 'off',
     '@typescript-eslint/lines-between-class-members': 'off',
     'no-restricted-syntax': 'off',
+    'no-bitwise': ["error", { "allow": ["|", "&", "^", ">>>"] }]
   },
   parserOptions: {
     ecmaVersion: 2020,
