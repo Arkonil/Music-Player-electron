@@ -6,8 +6,9 @@ const defaultState = {
 };
 
 const defaultStateUpdater = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  togglePlaying: (_v: boolean) => {},
+  togglePlaying: (v: boolean) => {
+    console.log(v);
+  },
   toggleShuffle: () => {},
 };
 
@@ -27,8 +28,8 @@ export default function AudioStateProvider({ children }: OnlyChildrenProp) {
   const [shuffleEnabled, setShuffleEnabled] = useState(false);
 
   const togglePlaying = useCallback((v: boolean) => {
-    setPlaying(v)
-  }, [])
+    setPlaying(v);
+  }, []);
 
   const toggleShuffle = useCallback(() => {
     setShuffleEnabled((v) => !v);
