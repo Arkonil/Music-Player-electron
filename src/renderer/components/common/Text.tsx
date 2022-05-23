@@ -15,7 +15,7 @@ function Text({ children, className = '', animate }: PropType) {
   const animation = useRef<Animation | null>(null);
 
   useEffect(() => {
-    console.log({ animate, children });
+    // console.log({ animate, children });
     if (animate) {
       const boxWidth = box.current.clientWidth;
       const text = box.current.children[0];
@@ -73,7 +73,7 @@ function Text({ children, className = '', animate }: PropType) {
   }, [children, animate]);
 
   return (
-    <div ref={box} className={`${className} ${classes.text}`}>
+    <div ref={box} className={`text ${classes.text} ${className}`}>
       <div data-animation={animate ? 'on' : 'off'}>{children}</div>
     </div>
   );
