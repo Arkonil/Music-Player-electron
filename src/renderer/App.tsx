@@ -6,16 +6,18 @@ import Parent from './components/Player/Parent';
 // import Parent from './experiment/Parent';
 
 import ThemeProvider from './components/contexts/ThemeContext';
+import { AudioStateProvider } from './components/contexts/AudioStateContext';
 
 declare global {
   interface Window {
     electron: {
-      ipcRenderer: any;
-      mm: any;
-      fs: any;
-      utils: {
-        uint8toBase64: (array: Uint8Array | Float32Array) => string;
+      ipcRenderer: {
+        on: (channel: string, func: (...args: any[]) => void) => void;
+        once: (channel: string, func: (...args: any[]) => void) => void;
+        send: (channel: string, ...args: any[]) => void;
       };
+      loadSongDataFromPath: (path: string) => Promise<Buffer>;
+      loadSongMetaDataFromPath: (path: string) => Promise<MusicPlayer.Song>;
     };
   }
 }
@@ -23,7 +25,9 @@ declare global {
 export default function App() {
   return (
     <ThemeProvider>
-      <Parent />
+      <AudioStateProvider>
+        <Parent />
+      </AudioStateProvider>
     </ThemeProvider>
   );
   // return <div />;
