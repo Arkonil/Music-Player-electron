@@ -1,5 +1,5 @@
 import { useRef, useEffect, ReactElement } from 'react';
-import classes from './common.module.scss';
+import './common.scss';
 
 type PropType = {
   children:
@@ -73,7 +73,7 @@ function Text({ children, className = '', animate }: PropType) {
   }, [children, animate]);
 
   return (
-    <div ref={box} className={`text ${classes.text} ${className}`}>
+    <div ref={box} className={`text ${className}`}>
       <div data-animation={animate ? 'on' : 'off'}>{children}</div>
     </div>
   );
