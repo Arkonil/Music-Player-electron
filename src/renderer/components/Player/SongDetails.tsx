@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import Text from '../common/Text';
-import classes from '../../style/Player.module.scss';
+// import classes from '../../style/Player.module.scss';
 
 // Change to react-router
 import Link from '../common/Link';
@@ -20,7 +20,7 @@ function SongDetails({ song, className = '' }: SongDetailsProps) {
   });
 
   return (
-    <div className={`player__song_details ${classes.songDetails} ${className}`}>
+    <div className={`player__song-details ${className}`}>
       <Text animate>
         <Link to={song.id}>{song.title}</Link>
       </Text>

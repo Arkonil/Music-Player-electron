@@ -1,26 +1,32 @@
-import { Button, Tooltip } from '@mui/material';
 import React from 'react';
-// import { BaseColorClass } from '../common/Color';
-import Color from '../common/Color';
-// import classes from './CurrentPlayer.module.scss';
+import { Button, Tooltip } from '@mui/material';
 
 type PropType = {
   toolTip: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  IconComponent: React.FC<{ color: string | Color }>;
-  color: string | Color;
+  IconComponent: React.FC;
+  enabled?: boolean;
 };
 
-function MediaButton({ toolTip, onClick, IconComponent, color }: PropType) {
+function MediaButton({
+  toolTip,
+  IconComponent,
+  enabled = false,
+  onClick,
+}: PropType) {
   return (
     <Tooltip title={toolTip} arrow enterDelay={500} leaveDelay={0}>
-      <div>
+      <div attr-enabled={enabled.toString()}>
         <Button onClick={onClick}>
-          <IconComponent color={color} />
+          <IconComponent />
         </Button>
       </div>
     </Tooltip>
   );
 }
+
+MediaButton.defaultProps = {
+  enabled: false,
+};
 
 export default MediaButton;

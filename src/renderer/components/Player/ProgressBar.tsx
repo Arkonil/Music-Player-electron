@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useRef, useEffect } from 'react';
 import { toOpacityString, toSaturationString } from '../common/Color';
-import classes from '../../style/Player.module.scss';
+// import classes from '../../style/Player.module.scss';
 import { useTheme } from '../contexts/ThemeContext';
 
 type DrawingTools = {
@@ -528,7 +528,7 @@ function ProgressBar({
   window.addEventListener('resize', onResize);
 
   return (
-    <div className={`player__progress_bar ${classes.progressBar} ${className}`}>
+    <div className={`player__progress-bar ${className}`}>
       <canvas
         ref={canvasRef}
         onClick={mouseClickHandler}
