@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // import Components
@@ -14,10 +15,8 @@ import {
   useAudioState,
   useAudioStateUpdater,
 } from '../contexts/AudioStateContext';
-// import { useTheme } from '../contexts/ThemeContext';
 
-// import styles
-// import classes from '../../style/Player.module.scss';
+// styles
 import '../../style/Player.scss';
 
 interface PlayerProps {
@@ -37,12 +36,11 @@ function Player({
   // contexts
   const audioState = useAudioState();
   const audioStateUpdater = useAudioStateUpdater();
-  // const { theme } = useTheme();
 
   // DOM Refs
   const toolTipRef = useRef(document.createElement('div'));
 
-  // import from a settings.json file
+  // TODO: import from a settings.json file
   const [repeat, setRepeat] = useState<'off' | 'all' | 'one'>('off');
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setMuted] = useState(false);
@@ -53,7 +51,6 @@ function Player({
   const audioElementRef = useRef(new Audio());
   audioElementRef.current.volume = volume;
   audioElementRef.current.muted = isMuted;
-  // audioElementRef.current.autoplay = true;
   const audioContext = useRef(new AudioContext());
   const [arrayData, setArrayData] = useState(new Float32Array(1000));
   const shouldRecalculate = useRef(true);
@@ -61,7 +58,6 @@ function Player({
   const handleShuffleButtonClick = useCallback(() => {
     console.debug('handleShuffleButtonClick called');
     audioStateUpdater.toggleShuffle();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPlay = useCallback(() => {
@@ -75,14 +71,12 @@ function Player({
       .catch((error) => {
         console.error('Error playing audio', error);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPause = useCallback(() => {
     console.debug('onPause called');
     audioElementRef.current.pause();
     audioStateUpdater.togglePlaying(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAudioStateChange = useCallback(() => {
@@ -187,9 +181,9 @@ function Player({
         onNextSong(true);
         onPlay();
       } else if (repeat === 'off') {
-        const sp = onNextSong(false)
+        const sp = onNextSong(false);
         if (!sp) {
-          audioStateUpdater.togglePlaying(false)
+          audioStateUpdater.togglePlaying(false);
         }
       }
       changeProgressTo(0);
@@ -199,14 +193,12 @@ function Player({
     return () => {
       audioElement.removeEventListener('ended', handleSongEnd);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [changeProgressTo, onNextSong, onPlay, repeat, shouldPlay]);
 
   const loadSong = useCallback(async (path: string) => {
     console.debug('LoadSong called');
     const audioElement = audioElementRef.current;
     const data = await window.electron.loadSongDataFromPath(path);
-    // console.log(data);
 
     audioElement.src = window.URL.createObjectURL(
       new Blob([data.buffer], { type: 'audio/mp3' })
@@ -239,10 +231,7 @@ function Player({
       Promise.race([loadSong(song.url)])
         .then(() => shouldPlay && onPlay())
         .catch(console.error);
-      // loadSong(song.url);
-      // onPlay();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadSong, onPlay, song.url]);
 
   // Timer
@@ -272,13 +261,7 @@ function Player({
   // #endregion
 
   return (
-    <div
-      className="player"
-      // style={{
-      //   color: theme.colors.fontColor,
-      //   backgroundColor: theme.colors.backgroundColor,
-      // }}
-    >
+    <div className="player">
       <ToolTip ref={toolTipRef} />
       <AlbumArt source={song.album?.albumArt} />
       <SongDetails song={song} />
@@ -316,5 +299,4 @@ function Player({
   );
 }
 
-// export default React.memo(Player);
 export default Player;

@@ -1,5 +1,5 @@
 import { Button, Tooltip } from '@mui/material';
-import { PlayIcon, PauseIcon } from '../Icons/Icon';
+import { PlayIcon, PauseIcon } from '../Icons';
 
 type PropType = {
   onClick: React.MouseEventHandler<HTMLButtonElement>;

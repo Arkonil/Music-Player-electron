@@ -1,9 +1,6 @@
 import React from 'react';
 import { Button, Slider } from '@mui/material';
-import * as Icons from '../Icons/Icon';
-
-// import { ThemeContext } from '../contexts/ThemeContext';
-// import classes from '../../style/Player.module.scss';
+import { VolumeIcon } from '../Icons';
 
 type ControllerProps = {
   className?: string;
@@ -20,7 +17,6 @@ function VolumeControl({
   onMutedChange,
   className = '',
 }: ControllerProps) {
-  // const { theme } = useContext(ThemeContext);
   let level: 'high' | 'mute' | 'low';
   if (!volume || muted) {
     level = 'mute';
@@ -36,7 +32,7 @@ function VolumeControl({
       attr-muted={!volume || muted ? 'yes' : 'no'}
     >
       <Button onClick={onMutedChange}>
-        <Icons.VolumeIcon level={level} />
+        <VolumeIcon level={level} />
       </Button>
       <Slider
         value={volume}
