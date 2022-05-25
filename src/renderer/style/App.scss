@@ -1,0 +1,27 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+:root {
+  --c-black: hsl(0, 0%, 0%);
+  --accent-color: hsl(332, 76%, 53%);
+  --accent-color-2: hsl(180, 44%, 25%);
+  --primary-color: hsl(0, 100%, 100%);
+  --secondary-color: hsl(233, 38%, 15%);
+
+  --box-shadow: 0 0 13px 5px rgb(0 0 0 / 50%);
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', 'Helvetica Neue', sans-serif;
+  user-select: none;
+}
+
+body {
+  overflow: hidden;
+}

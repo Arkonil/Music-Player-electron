@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Slider } from '@mui/material';
 import * as Icons from '../Icons/Icon';
 
-import { ThemeContext } from '../contexts/ThemeContext';
-import classes from './PlayerStyles.module.scss';
+// import { ThemeContext } from '../contexts/ThemeContext';
+// import classes from '../../style/Player.module.scss';
 
 type ControllerProps = {
   className?: string;
@@ -20,8 +20,8 @@ function VolumeControl({
   onMutedChange,
   className = '',
 }: ControllerProps) {
-  const { theme } = useContext(ThemeContext);
-  let level;
+  // const { theme } = useContext(ThemeContext);
+  let level: 'high' | 'mute' | 'low';
   if (!volume || muted) {
     level = 'mute';
   } else if (volume <= 0.5) {
@@ -32,14 +32,13 @@ function VolumeControl({
 
   return (
     <div
-      className={`player__volume_control ${classes.volumeController} ${className}`}
+      className={`player__volume-controller ${className}`}
       attr-muted={!volume || muted ? 'yes' : 'no'}
     >
       <Button onClick={onMutedChange}>
-        <Icons.VolumeIcon level={level} color={theme.colors.secondaryColor} />
+        <Icons.VolumeIcon level={level} />
       </Button>
       <Slider
-        sx={{ color: theme.colors.primaryColor }}
         value={volume}
         onChange={(_event: Event, value: number | number[]) => {
           if (!Array.isArray(value)) {
@@ -55,8 +54,6 @@ function VolumeControl({
           if (value === 1) return 'full';
           return `${Math.floor(value * 100)}`;
         }}
-        data-background-color={theme.colors.toolTipColor}
-        data-color="black"
       />
     </div>
   );

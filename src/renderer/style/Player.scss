@@ -39,14 +39,29 @@ $current-player-height: 93px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   position: fixed;
   bottom: 0;
+
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+
+  .player__icon {
+    height: 100%;
+    width: 100%;
+    .level1 {
+      fill: var(--primary-color);
+    }
+
+    .level2 {
+      fill: var(--accent-color);
+    }
+  }
 }
 
 /* Progress Bar Tooltip */
-.toolTip {
+.player__progress-bar__tool-tip {
   position: absolute;
   width: 100%;
   top: 0;
@@ -54,57 +69,55 @@ $current-player-height: 93px;
   height: 50px;
   z-index: -1;
 
-  &>div {
+  & > div {
     --container-width: 50px;
     position: absolute;
-    height: 40px;
+    top: 7px;
+    height: 25px;
     width: var(--container-width);
-    background: transparent;
-    transition: 200ms ease;
-    transition-property: opacity, transform;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 5px 0 0 0;
+    color: var(--secondary-color);
+    background-color: var(--primary-color);
+    @include flexCenter(row);
 
-    &>div:nth-child(1) {
-      height: 25px;
-      width: 100%;
-      border-radius: 5px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: small;
+    border-radius: 5px;
+
+    .tool-tip-value {
+      @include flexCenter(row);
+      font-size: 13px;
       font-weight: 500;
     }
 
-    &>div:nth-child(2) {
-      --size-vertical: 5px;
-      --size-horizontal: 10px;
-      width: var(--size-horizontal);
-      height: var(--size-vertical);
-      border: solid transparent;
-      border-width: var(--size-vertical) calc(var(--size-horizontal) / 2) 0;
+    &::before {
+      content: '';
+      --size: 8px;
+      height: var(--size);
+      width: var(--size);
+      background-color: inherit; // for debug
+      position: absolute;
+      bottom: 0;
+      transform: translateY(50%) rotate(45deg);
     }
-  }
 
-  [hidden] {
-    opacity: 0;
-    // transform: translateY(10px);
-    transform: scale(0.5);
+    transform-origin: bottom center;
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    filter: drop-shadow(2px 4px 6px black);
+
+    &[hidden] {
+      transform: translateY(60%) scale(0);
+    }
   }
 }
 
 /* Album Art Styles */
-.albumArt {
+.player__album-art {
   @include flexCenter(row);
   margin: 0 0.45vw 0 0.8vw;
   height: 4.4vw;
   min-width: 4.4vw;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow: 0 0 13px 5px rgba(0, 0, 0, 0.5);
+  // box-shadow: 0 0 13px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--box-shadow);
 
   img {
     width: 100%;
@@ -113,8 +126,8 @@ $current-player-height: 93px;
 }
 
 /* Song Details */
-.songDetails {
-  margin: auto 0.45vw;
+.player__song-details {
+  margin: auto 0.7vw ;
   min-width: 150px;
   width: 12vw;
   height: 38.7%;
@@ -147,7 +160,7 @@ $current-player-height: 93px;
 }
 
 /* Playback Buttons */
-.playBackController {
+.player__controller {
   height: $current-player-height / 2;
   width: 17vw;
   min-width: 200px;
@@ -171,8 +184,16 @@ $current-player-height: 93px;
       &:hover {
         opacity: 0.8;
         background-color: rgba(100%, 100%, 100%, 0.21);
-        box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+        // box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--box-shadow);
       }
+    }
+  }
+
+  div:nth-child(1),
+  div:nth-child(5) {
+    &[attr-enabled=true] path {
+      fill: var(--accent-color);
     }
   }
 
@@ -186,7 +207,8 @@ $current-player-height: 93px;
 
       &:hover {
         transform: scale(1.05);
-        box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+        // box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+        box-shadow: var(--box-shadow);
       }
 
       &:active {
@@ -197,24 +219,12 @@ $current-player-height: 93px;
 }
 
 /* Time Display */
-.timeDisplay {
+.player__time-display {
   font-size: 0.8rem;
 }
 
-.currentPlayer {
-  $margin: 2ch;
-
-  div:nth-child(5).timeDisplay {
-    margin-left: $margin;
-  }
-
-  div:nth-child(7).timeDisplay {
-    margin-right: $margin;
-  }
-}
-
 /* Progress Bar */
-.progressBar {
+.player__progress-bar {
   @include flexCenter(row);
 
   min-width: 350px;
@@ -233,7 +243,7 @@ $current-player-height: 93px;
 }
 
 /* Volume Control */
-.volumeController {
+.player__volume-controller {
   height: 35%;
   display: flex;
   flex-direction: row;
@@ -251,14 +261,23 @@ $current-player-height: 93px;
     &:hover {
       opacity: 0.8;
       background-color: rgba(100%, 100%, 100%, 0.21);
-      box-shadow: 0 0 14px 1px rgba(0, 0, 0, 0.5);
+      box-shadow: var(--box-shadow);
     }
   }
 
-  :global {
-    .MuiSlider-root {
-      width: 70%;
+  .MuiSlider-root {
+    min-width: 70%;
+    width: auto;
+    color: var(--accent-color);
+
+    & > span {
+      background-color: var(--accent-color);
     }
+
+    .MuiSlider-rail {
+      transition: 200ms ease;
+    }
+
 
     .MuiSlider-thumb {
       height: 0;
@@ -272,30 +291,21 @@ $current-player-height: 93px;
       }
     }
 
-    .MuiSlider-rail {
-      transition: 200ms ease;
+    &:hover .MuiSlider-rail {
+      box-shadow: var(--box-shadow);
     }
 
-    .MuiSlider-root:hover .MuiSlider-rail {
-      box-shadow: 0 0 10px 5px black;
-    }
 
     .MuiSlider-valueLabel {
-      background-color: white;
+      background-color: var(--primary-color);
       border-radius: 5px;
       height: 25px;
-      color: black;
+      color: var(--secondary-color);
       font-size: 13px;
-      // transition-duration: 2000ms;
-
-      // top: -10px;
-      // opacity: 0;
-      // transform: scale(0.5);
     }
 
     .MuiSlider-valueLabelOpen {
       opacity: 1;
-      // transform: scale(1);
     }
   }
 

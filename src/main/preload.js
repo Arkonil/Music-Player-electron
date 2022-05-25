@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const parse = require('parse-css-color');
 
 const {loadSongDataFromPath, loadSongMetaDataFromPath} = require('./node_func');
 
@@ -26,5 +27,9 @@ contextBridge.exposeInMainWorld('electron', {
     }
   },
   loadSongDataFromPath,
-  loadSongMetaDataFromPath
+  loadSongMetaDataFromPath,
+  parseCSSColorString(cssString) {
+    return parse(cssString.trim());
+  }
+  // parseCSSColorString: parse,
 });

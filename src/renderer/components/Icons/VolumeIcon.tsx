@@ -1,10 +1,7 @@
-import { SvgIcon } from '@mui/material';
-import Color from '../common/Color';
-import classes from './IconStyles.module.scss';
+import React from 'react';
 
 type PropType = {
-  color: Color | string;
-  level: string; // 'high' | 'low' | 'mute';
+  level: 'high' | 'low' | 'mute';
 };
 
 const svgPaths = (level: string): string => {
@@ -22,26 +19,12 @@ const svgPaths = (level: string): string => {
   }
 };
 
-function VolumeIcon({ color, level, ...extraProps }: PropType) {
-  let derivedColor: string;
-  if (typeof color === 'string') {
-    derivedColor = color || 'black';
-  } else {
-    derivedColor =
-      (color && color.toRGBAString && color.toRGBAString()) || 'black';
-  }
-
+function VolumeIcon({ level }: PropType) {
   return (
-    <SvgIcon
-      viewBox="0 0 256 256"
-      className={classes.playerIcon}
-      sx={{ color: derivedColor, height: '100%', width: '100%' }}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...extraProps}
-    >
-      <path fill={derivedColor} d={svgPaths(level)} />
-    </SvgIcon>
+    <svg viewBox="0 0 256 256" className="player__icon volume">
+      <path className='level1' d={svgPaths(level)} />
+    </svg>
   );
 }
 
-export default VolumeIcon;
+export default React.memo(VolumeIcon);

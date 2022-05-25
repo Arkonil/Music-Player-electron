@@ -14,10 +14,11 @@ import {
   useAudioState,
   useAudioStateUpdater,
 } from '../contexts/AudioStateContext';
-import { useTheme } from '../contexts/ThemeContext';
+// import { useTheme } from '../contexts/ThemeContext';
 
 // import styles
-import classes from './PlayerStyles.module.scss';
+// import classes from '../../style/Player.module.scss';
+import '../../style/Player.scss';
 
 interface PlayerProps {
   song: MusicPlayer.Song;
@@ -32,10 +33,11 @@ function Player({
   onPreviousSong,
   onNextSong,
 }: PlayerProps): JSX.Element {
+  // #region Hooks and callbacks
   // contexts
   const audioState = useAudioState();
   const audioStateUpdater = useAudioStateUpdater();
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   // DOM Refs
   const toolTipRef = useRef(document.createElement('div'));
@@ -267,14 +269,15 @@ function Player({
       audioElement.removeEventListener('pause', endInterval);
     };
   }, []);
+  // #endregion
 
   return (
     <div
-      className={classes.player}
-      style={{
-        color: theme.colors.fontColor,
-        backgroundColor: theme.colors.backgroundColor,
-      }}
+      className="player"
+      // style={{
+      //   color: theme.colors.fontColor,
+      //   backgroundColor: theme.colors.backgroundColor,
+      // }}
     >
       <ToolTip ref={toolTipRef} />
       <AlbumArt source={song.album?.albumArt} />
@@ -289,7 +292,7 @@ function Player({
         repeatState={repeat}
         onRepeatButtonClick={handleRepeatButtonClick}
       />
-      <TimeDisplay className={classes.timeDisplay} seconds={currentProgress} />
+      <TimeDisplay className="player__time-display" seconds={currentProgress} />
       <ProgressBar
         array={arrayData}
         currentProgress={
@@ -300,7 +303,7 @@ function Player({
         toolTipHandler={handleTooltip}
       />
       <TimeDisplay
-        className={classes.timeDisplay}
+        className="player__time-display"
         seconds={audioElementRef.current.duration}
       />
       <VolumeControl

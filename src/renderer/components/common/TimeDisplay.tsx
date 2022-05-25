@@ -1,5 +1,5 @@
 import React from 'react';
-import classes from './common.module.scss';
+import './common.scss';
 
 type PropType = {
   seconds: number;
@@ -20,7 +20,7 @@ function TimeDisplay({ className, seconds = 0 }: PropType): JSX.Element {
   }
 
   return (
-    <div className={`time_display ${classes.timeDisplay} ${className}`}>
+    <div className={`time_display ${className}`}>
       <span>{displayString}</span>
     </div>
   );

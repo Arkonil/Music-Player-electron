@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useRef, useEffect } from 'react';
 import { toOpacityString, toSaturationString } from '../common/Color';
-import classes from './PlayerStyles.module.scss';
-import { useTheme } from '../contexts/ThemeContext';
 
 type DrawingTools = {
   canvas: HTMLCanvasElement;
@@ -63,23 +61,7 @@ type PropType = {
     isMouseOver: boolean
   ) => void;
 };
-// TODO: Modify it \/
-/**
- * Audio Progress Bar Component
- * @param {Float32Array} array Array of audio samples
- * @param {number} barGap Gap between bars (in number of pixels)
- * @param {number} barWidth Width of bars (in number of pixels)
- * @param {number} shadowBlur size of shadow effect
- * @param {number} shadowLength ratio of shadow length and bar length (inside [0, 1])
- * @param {number} handleActiveRadius Radius of slider handle when mouse down (in number of pixels)
- * @param {number} handleInactiveRadius Radius of slider handle when mouse up (in number of pixels)
- * @param {number} padding Padding of component
- * @param {number} currentProgress initial value of progress meter
- * @param {Function} onChange callback function to be called when slider is changed
- * @param {Object} style Object containing css style properties
- * @param {boolean} shouldRecalculate whether to recalculate sample array
- *
- */
+
 function ProgressBar({
   array,
   onChange,
@@ -103,11 +85,11 @@ function ProgressBar({
   const mouseOnHandle = useRef(false);
   const progress = useRef(currentProgress);
 
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const colors = useRef({
-    track: theme.colors.primaryColor,
-    handle: theme.colors.secondaryColor,
-    shadow: theme.colors.mainColor,
+    track: '#000000',// theme.colors.primaryColor,
+    handle: '#000000',// theme.colors.secondaryColor,
+    shadow: '#000000',// theme.colors.mainColor,
   });
 
   const canvasRef = useRef(document.createElement('canvas'));
@@ -158,7 +140,7 @@ function ProgressBar({
     );
 
     context.lineCap = 'round';
-    context.shadowColor = theme.colors.mainColor;
+    context.shadowColor = colors.current.shadow;
     context.shadowBlur = shadowBlur ?? 10;
 
     drawingTools.current = {
@@ -214,7 +196,7 @@ function ProgressBar({
       1 - multiplier.current * 0.5
     );
     lingradActive.addColorStop(0, activeColor);
-    lingradActive.addColorStop(0.5, activeColor);
+    lingradActive.addColorStop(0.499, activeColor);
     lingradActive.addColorStop(0.5, activeColorShadow);
     lingradActive.addColorStop(1, activeColorShadow);
 
@@ -236,7 +218,7 @@ function ProgressBar({
       1 - multiplier.current * 0.5
     );
     lingradInactive.addColorStop(0, inactiveColor);
-    lingradInactive.addColorStop(0.5, inactiveColor);
+    lingradInactive.addColorStop(0.499, inactiveColor);
     lingradInactive.addColorStop(0.5, inactiveColorShadow);
     lingradInactive.addColorStop(1, inactiveColorShadow);
 
@@ -262,7 +244,7 @@ function ProgressBar({
 
     // Calculating Dimensions
     const barMiddle = {
-      y: padding + maxHeight / 2, // (1 + shadowLength),
+      y: (padding + maxHeight / 2) | 0, // (1 + shadowLength),
       x1: 0,
       x2: 0,
       x3: 0,
@@ -490,6 +472,14 @@ function ProgressBar({
   };
 
   useEffect(() => {
+    colors.current = {
+      track:  getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
+      handle: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
+      shadow: getComputedStyle(document.documentElement).getPropertyValue('--c-black'),
+    }
+  })
+
+  useEffect(() => {
     draw('bar', true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -528,7 +518,7 @@ function ProgressBar({
   window.addEventListener('resize', onResize);
 
   return (
-    <div className={`player__progress_bar ${classes.progressBar} ${className}`}>
+    <div className={`player__progress-bar ${className}`}>
       <canvas
         ref={canvasRef}
         onClick={mouseClickHandler}
