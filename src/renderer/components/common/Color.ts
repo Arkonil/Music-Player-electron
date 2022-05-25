@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 export interface HSLColor {
   hue: number;
   saturation: number;
@@ -95,90 +96,88 @@ class Color {
     this.alpha = alpha;
   }
 
-  static getLightnessFromRGB({ red, green, blue }: RGBColor): number {
-    check1({ red, green, blue });
-    return (Math.max(red, green, blue) + Math.min(red, green, blue)) * 0.5;
-  }
-
-  static getSaturationFromRGB({ red, green, blue }: RGBColor): number {
-    check1({ red, green, blue });
-    let saturation: number;
-    const lightness = Color.getLightnessFromRGB({ red, green, blue });
-    const max = Math.max(red, green, blue);
-    const min = Math.min(red, green, blue);
-    if (lightness <= 0.5) {
-      saturation = (max - min) / (max + min);
-    } else {
-      saturation = (max - min) / (2 - max - min);
-    }
-    return saturation || 0;
-  }
-
-  static getHueFromRGB({ red, green, blue }: RGBColor): number {
-    check1({ red, green, blue });
-    const max = Math.max(red, green, blue);
-    const min = Math.min(red, green, blue);
-    let hue: number;
-    switch (max) {
-      case min:
-        return 0;
-      case red:
-        hue = (green - blue) / (max - min);
-        break;
-      case green:
-        hue = 2.0 + (blue - red) / (max - min);
-        break;
-      case blue:
-        hue = 4.0 + (red - green) / (max - min);
-        break;
-      default:
-        throw new Error(`Calculation Error: ${{ red, green, blue, max }}`);
-    }
-    // return hue / 6 || 0;
-    // (hue * 60 + 360)  // TODO: Complete the formula
-    return (1 + hue / 6) % 1;
-  }
-
+  /**
+   * Converts an RGB color value to HSL. Conversion formula
+   * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+   * Assumes red, green, and blue are contained in the set [0, 1] and
+   * returns hue, saturation, and lightness in the set [0, 1].
+   *
+   * @param {RGBColor}  color The RGB color values
+   * @return {HSLColor} The HSL representation
+   */
   static getHSLfromRGB(color: RGBColor): HSLColor {
     check1(color);
+    const { red, green, blue } = color;
+    const max = Math.max(red, green, blue),
+      min = Math.min(red, green, blue);
+
+    let hue: number, saturation: number;
+    const lightness = (max + min) / 2;
+
+    if (max === min) {
+      hue = 0; // achromatic
+      saturation = 0;
+    } else {
+      const diff = max - min;
+      saturation =
+        lightness > 0.5 ? diff / (2 - max - min) : diff / (max + min);
+      switch (max) {
+        case red:
+          hue = (green - blue) / diff + (green < blue ? 6 : 0);
+          break;
+        case green:
+          hue = (blue - red) / diff + 2;
+          break;
+        case blue:
+          hue = (red - green) / diff + 4;
+          break;
+        default:
+          hue = 0;
+      }
+      hue /= 6;
+    }
+
     return {
-      hue: Color.getHueFromRGB(color),
-      saturation: Color.getSaturationFromRGB(color),
-      lightness: Color.getLightnessFromRGB(color),
+      hue,
+      saturation,
+      lightness,
     };
   }
 
   static getRGBfromHSL({ hue, saturation, lightness }: HSLColor): RGBColor {
     check1({ hue, saturation, lightness });
-    const temp1 =
-      lightness < 0.5
-        ? lightness * (1 + saturation)
-        : lightness + saturation - saturation * lightness;
-    const temp2 = 2 * lightness - temp1;
-
-    let tempR = hue + 1 / 3;
-    tempR -= Math.trunc(tempR);
-    const tempG = hue;
-    let tempB = hue - 1 / 3;
-    tempB -= Math.trunc(tempB);
-
-    const arr = [tempR, tempG, tempB];
-
-    for (let i = 0; i < arr.length; i += 1) {
-      if (6 * arr[i] < 1) {
-        arr[i] = temp2 + (temp1 - temp2) * 6 * arr[i];
-      } else if (2 * arr[i] < 1) {
-        arr[i] = temp1;
-      } else if (3 * arr[i] < 2) {
-        arr[i] = temp2 + (temp1 - temp2) * (4 - 6 * arr[i]);
-      } else {
-        arr[i] = temp2;
-      }
+    if (saturation === 0) {
+      return { red: lightness, green: lightness, blue: lightness };
     }
 
-    return { red: tempR, green: tempG, blue: tempB };
+    function hue2rgb(p: number, q: number, t: number) {
+      // eslint-disable-next-line no-underscore-dangle
+      let _t = t;
+      if(_t < 0) _t += 1;
+      if(_t > 1) _t -= 1;
+      if(_t < 1/6) return p + (q - p) * 6 * _t;
+      if(_t < 1/2) return q;
+      if(_t < 2/3) return p + (q - p) * (2/3 - _t) * 6;
+      return p;
+    }
+
+    const q = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+    const p = 2 * lightness - q;
+
+    return {
+      red: hue2rgb(p, q, hue + 1/3),
+      green: hue2rgb(p, q, hue),
+      blue: hue2rgb(p, q, hue - 1/3),
+    }
   }
 
+  /**
+   *
+   * @param red number in [0, 255]
+   * @param green number in [0, 255]
+   * @param blue number in [0, 255]
+   * @returns Color
+   */
   static fromRGB(
     red: number,
     green: number,
@@ -206,6 +205,13 @@ class Color {
     return color;
   }
 
+  /**
+   *
+   * @param red number in [0, 255]
+   * @param green number in [0, 255]
+   * @param blue number in [0, 255]
+   * @returns Color
+   */
   static fromRGBA(
     red: number,
     green: number,
@@ -215,6 +221,12 @@ class Color {
     return Color.fromRGB(red, green, blue, alpha);
   }
 
+  /**
+   * @param hue number in [0, 360]
+   * @param saturation number in [0, 100]
+   * @param lightness number in [0, 100]
+   * @returns Color
+   */
   static fromHSL(
     hue: number,
     saturation: number,
@@ -241,6 +253,12 @@ class Color {
     return color;
   }
 
+  /**
+   * @param hue number in [0, 360]
+   * @param saturation number in [0, 100]
+   * @param lightness number in [0, 100]
+   * @returns Color
+   */
   static fromHSLA(
     hue: number,
     saturation: number,
@@ -250,96 +268,40 @@ class Color {
     return Color.fromHSL(hue, saturation, lightness, alpha);
   }
 
+  /**
+   * Parses hex color string
+   * @param hexString string
+   * @returns Color
+   */
   static fromHex(hexString: string): Color {
     // console.log(hexString);
-    const hex = hexString.slice(1);
-    let color: RGBColor;
-    if (hex.length >= 5) {
-      color = {
-        red: parseInt(hex.slice(0, 2), 16),
-        green: parseInt(hex.slice(2, 4), 16),
-        blue: parseInt(hex.slice(4, 6), 16),
-        alpha: parseInt(hex.slice(6, 8) || 'FF', 16) / 255,
-      };
-    } else {
-      color = {
-        red: parseInt(hex[0] + hex[0], 16),
-        green: parseInt(hex[1] + hex[1], 16),
-        blue: parseInt(hex[2] + hex[2], 16),
-        alpha: parseInt(hex[3] + hex[3] || 'FF', 16) / 255,
-      };
-    }
-    // console.log(color);
-    return Color.fromRGB(color.red, color.green, color.blue, color.alpha);
+    return Color.parseCSS(hexString);
   }
 
+  /**
+   * Parses css color
+   * @param cssString string
+   * @returns Color
+   */
   static parseCSS(cssString: string): Color {
-    const str = cssString.replaceAll(/\s+/g, '');
-    const match = str.match(/^(rgb|hsl|#)(a?)(.+)/);
-    if (match === null) {
+    const color = window.electron.parseCSSColorString(cssString);
+
+    if (color === null) {
       throw new Error(`Invalid CSS: ${cssString}`);
     }
-    const data = match[3];
-    let dataMatch: RegExpMatchArray | null;
-    let rgbColor: RGBColor, hslColor: HSLColor;
-    switch (match[1]) {
-      case 'rgb':
-        dataMatch = data.match(/\(([\d.]+),([\d.]+),([\d.]+),?([\d.]+)?\)/);
-        if (dataMatch && dataMatch[1]) {
-          rgbColor = {
-            red: parseFloat(dataMatch[1]),
-            green: parseFloat(dataMatch[2]),
-            blue: parseFloat(dataMatch[3]),
-            alpha: match[2] === 'a' ? parseFloat(dataMatch[4]) : 1,
-          };
-          return Color.fromRGB(
-            rgbColor.red,
-            rgbColor.green,
-            rgbColor.blue,
-            rgbColor.alpha
-          );
-        }
-        dataMatch = data.match(/\(([\d.]+)%,([\d.]+)%,([\d.]+)%,?([\d.]+)?\)/);
-        if (dataMatch && dataMatch[1]) {
-          rgbColor = {
-            red: parseFloat(dataMatch[1]) * 2.55,
-            green: parseFloat(dataMatch[2]) * 2.55,
-            blue: parseFloat(dataMatch[3]) * 2.55,
-            alpha: match[2] === 'a' ? parseFloat(dataMatch[4]) : 1,
-          };
-          return Color.fromRGB(
-            rgbColor.red,
-            rgbColor.green,
-            rgbColor.blue,
-            rgbColor.alpha
-          );
-        }
-        break;
 
-      case 'hsl':
-        dataMatch = data.match(/\(([\d.]+),([\d.]+)%,([\d.]+)%,?([\d.]+)?\)/);
-        if (dataMatch && dataMatch[1]) {
-          hslColor = {
-            hue: parseFloat(dataMatch[1]),
-            saturation: parseFloat(dataMatch[2]),
-            lightness: parseFloat(dataMatch[3]),
-            alpha: match[2] === 'a' ? parseFloat(dataMatch[4]) : 1,
-          };
-          return Color.fromHSL(
-            hslColor.hue,
-            hslColor.saturation,
-            hslColor.lightness,
-            hslColor.alpha
-          );
-        }
-        break;
-
-      case '#':
-        return Color.fromHex(str);
-      default:
-        break;
+    if (color.type === 'rgb') {
+      const [red, green, blue] = color.values;
+      return Color.fromRGBA(red, green, blue, color.alpha);
     }
-    throw new Error(`Invalid CSS: ${cssString}`);
+
+    const [hue, saturation, lightness] = color.values;
+    return Color.fromHSLA(
+      ((hue % 360) + 360) % 360,
+      saturation,
+      lightness,
+      color.alpha
+    );
   }
 }
 
@@ -430,13 +392,13 @@ Color.prototype.withChanges = function withChanges(changes: {
   alpha?: number;
 }): Color {
   return new Color(
-    changes.red        ?? this.red,
-    changes.green      ?? this.green,
-    changes.blue       ?? this.blue,
-    changes.hue        ?? this.hue,
+    changes.red ?? this.red,
+    changes.green ?? this.green,
+    changes.blue ?? this.blue,
+    changes.hue ?? this.hue,
     changes.saturation ?? this.saturation,
-    changes.lightness  ?? this.lightness,
-    changes.alpha      ?? this.alpha
+    changes.lightness ?? this.lightness,
+    changes.alpha ?? this.alpha
   );
 };
 

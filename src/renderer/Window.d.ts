@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export {};
 
+type ColorParsingResult = {
+  type: 'rgb' | 'hsl',
+  values: [number, number, number],
+  alpha: number
+}
+
 declare global {
   interface Window {
     electron: {
@@ -11,6 +17,7 @@ declare global {
       };
       loadSongDataFromPath: (path: string) => Promise<Buffer>;
       loadSongMetaDataFromPath: (path: string) => Promise<MusicPlayer.Song>;
+      parseCSSColorString: (cssString: string) => ColorParsingResult | null;
     };
   }
 }
