@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useRef, useEffect } from 'react';
 import { toOpacityString, toSaturationString } from '../common/Color';
@@ -20,7 +21,6 @@ const getSample = (
   console.warn('Doing Heavy Calculations');
   const arr = Float32Array.from(array);
   if (size >= arr.length) {
-    // numberOfBars = arr.length;
     return [arr, true];
   }
 
@@ -38,7 +38,6 @@ const getSample = (
       sample[i] /= max;
     }
   }
-  // console.log(sample);
   return [sample, Boolean(max)];
 };
 
@@ -85,11 +84,10 @@ function ProgressBar({
   const mouseOnHandle = useRef(false);
   const progress = useRef(currentProgress);
 
-  // const { theme } = useTheme();
   const colors = useRef({
-    track: '#000000',// theme.colors.primaryColor,
-    handle: '#000000',// theme.colors.secondaryColor,
-    shadow: '#000000',// theme.colors.mainColor,
+    track: '#000000',
+    handle: '#000000',
+    shadow: '#000000',
   });
 
   const canvasRef = useRef(document.createElement('canvas'));
@@ -103,7 +101,6 @@ function ProgressBar({
     return !isMouseOver.current
       ? 3 * t * (1 - t) * (1 - t) * 1.8 + 3 * t * t * (1 - t) * 0.7 + t * t * t
       : t * t * t;
-    // : 3 * t * (1 - t) * (1 - t) * -0.8 + 3 * t * t * (1 - t) * 0.3 + t * t * t;
   };
 
   // Drawing Functions
@@ -124,7 +121,6 @@ function ProgressBar({
     [sampleArray.current, isWorthRendering] = getSample(array, numberOfBars);
     numberOfBars = sampleArray.current.length;
 
-    // shadowLength = shadowLength || 0;
     const lingradActive = context.createLinearGradient(
       padding,
       padding,
@@ -176,7 +172,7 @@ function ProgressBar({
     // Calculating Dimensions
     const barMiddle = {
       x: padding + barGap / 2,
-      y: padding + maxHeight / 2, // (1 + shadowLength),
+      y: padding + maxHeight / 2,
     };
     let change = 0;
     const currentMultiplier = bezierCurve(multiplier.current);
@@ -244,7 +240,7 @@ function ProgressBar({
 
     // Calculating Dimensions
     const barMiddle = {
-      y: (padding + maxHeight / 2) | 0, // (1 + shadowLength),
+      y: (padding + maxHeight / 2) | 0,
       x1: 0,
       x2: 0,
       x3: 0,
@@ -281,9 +277,7 @@ function ProgressBar({
       2 * Math.PI,
       false
     );
-    // context.fillStyle = mouseOnHandle.current
-    //   ? handleActiveColor.toHSLAString()
-    //   : handleInactiveColor.toHSLAString() || handleActiveColor.toHSLAString();
+
     context.fillStyle = colors.current.handle;
 
     context.fill();
@@ -334,14 +328,12 @@ function ProgressBar({
         );
         if (multiplier.current) draw('bar');
         else draw('line');
-        // multiplier.current ? draw("bar") : draw("line");
         raf.current = window.requestAnimationFrame(update);
       }
     };
     raf.current = window.requestAnimationFrame(update);
   };
   const contractAnimation = () => {
-    // console.log("in contractAnimation");
     window.cancelAnimationFrame(raf.current);
     const update = () => {
       if (multiplier.current > 0) {
@@ -351,7 +343,6 @@ function ProgressBar({
         );
         if (multiplier.current) draw('bar');
         else draw('line');
-        // multiplier.current ? this.draw("bar") : this.draw("line");
         raf.current = window.requestAnimationFrame(update);
       }
     };
@@ -364,11 +355,9 @@ function ProgressBar({
       console.error('drawing tools can not be used as it is null');
       return;
     }
-    // console.log("onMouseClickHandler");
     const { left: l } = e.currentTarget.getBoundingClientRect();
     let targetValue = (e.clientX - l - padding) / drawingTools.current.maxWidth;
     targetValue = Math.max(0, Math.min(1, targetValue));
-    // console.log({target: targetValue, current: progress.current});
 
     const stepCount = 10;
     const step = (targetValue - progress.current) / stepCount;
@@ -412,11 +401,11 @@ function ProgressBar({
       console.error('drawing tools can not be used as it is null');
       return;
     }
-    // console.log("onMouseMoveHandler");
+
     const { left: l } = e.currentTarget.getBoundingClientRect();
     let position = (e.clientX - l - padding) / drawingTools.current.maxWidth;
     const isMouseOver = position >= 0 && position <= 1;
-    // console.log(e.clientX, e.clientY)
+
     position = Math.max(0, Math.min(1, position));
     if (mouseOnHandle.current) {
       progress.current = position;
@@ -429,7 +418,7 @@ function ProgressBar({
       console.error('drawing tools can not be used as it is null');
       return;
     }
-    // console.log("onMouseDownHandler");
+
     const { top: t, left: l } = e.currentTarget.getBoundingClientRect();
     const x =
       progress.current * drawingTools.current.maxWidth +
@@ -473,15 +462,20 @@ function ProgressBar({
 
   useEffect(() => {
     colors.current = {
-      track:  getComputedStyle(document.documentElement).getPropertyValue('--accent-color'),
-      handle: getComputedStyle(document.documentElement).getPropertyValue('--primary-color'),
-      shadow: getComputedStyle(document.documentElement).getPropertyValue('--c-black'),
-    }
-  })
+      track: getComputedStyle(document.documentElement).getPropertyValue(
+        '--accent-color'
+      ),
+      handle: getComputedStyle(document.documentElement).getPropertyValue(
+        '--primary-color'
+      ),
+      shadow: getComputedStyle(document.documentElement).getPropertyValue(
+        '--c-black'
+      ),
+    };
+  });
 
   useEffect(() => {
     draw('bar', true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isInitialMount = useRef(true);
@@ -506,7 +500,6 @@ function ProgressBar({
         draw(isMouseOver.current ? 'line' : 'bar', false);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentProgress,
     shouldRecalculate,

@@ -46,9 +46,7 @@ function PlaybackController({
       throw new Error(`Invalid Argument: ${repeatState}`);
   }
   return (
-    <div
-      className={`player__controller ${className}`}
-    >
+    <div className={`player__controller ${className}`}>
       {/* Shuffle Button */}
       <MediaButton
         toolTip={`${isShuffleOn ? 'Disable' : 'Enable'} Shuffle`}
@@ -63,10 +61,7 @@ function PlaybackController({
         IconComponent={Icons.PreviousIcon}
       />
       {/* Play Pause Button */}
-      <PlayPauseButton
-        onClick={onAudioStateChange}
-        isPlaying={isPlaying}
-      />
+      <PlayPauseButton onClick={onAudioStateChange} isPlaying={isPlaying} />
       {/* Next Button */}
       <MediaButton
         toolTip="Next"
