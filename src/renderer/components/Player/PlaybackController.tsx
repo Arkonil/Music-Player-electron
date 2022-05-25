@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as Icons from '../Icons/Icon';
+import * as Icons from '../Icons';
 import MediaButton from './MediaButton';
 import PlayPauseButton from './PlayPauseButton';
 
