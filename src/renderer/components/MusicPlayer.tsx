@@ -27,7 +27,6 @@ function shuffle(array: number[], index?: number): number[] {
   }
 
   for (let j, i = min; i < array.length; i++) {
-    // j = randomInt(i, array.length - 1);
     j = randInt(i, array.length - 1);
     [array[i], array[j]] = [array[j], array[i]];
   }
@@ -59,15 +58,6 @@ export default function MusicPlayer() {
       setPlayIndex(0);
       setShouldPlay(repeat);
       return repeat;
-
-      // } else if (repeat) {
-      //   console.debug('to 0');
-      //   setPlayIndex(0);
-      // } else {
-      //   console.log('Restarting playlist');
-      //   return false;
-      // }
-      // return true;
     },
     [playIndex, playOrder]
   );

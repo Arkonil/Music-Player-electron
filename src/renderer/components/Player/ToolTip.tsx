@@ -5,7 +5,7 @@ const ToolTip = React.forwardRef(
     return (
       <div className="player__progress-bar__tool-tip">
         <div ref={ref} hidden>
-          <div className='tool-tip-value' />
+          <div className="tool-tip-value" />
         </div>
       </div>
     );
