@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-shadow */
 import React, { useRef, useEffect } from 'react';
-import { toOpacityString, toSaturationString } from '../common/Color';
+import { toOpacityString, toSaturationString } from '../../utils/Color';
 
 type DrawingTools = {
   canvas: HTMLCanvasElement;
