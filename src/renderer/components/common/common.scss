@@ -27,3 +27,62 @@
     text-align: center;
   }
 }
+
+
+/* Resizable Child Container Styles */
+.resizable-child-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+
+  .gutter {
+    height: 100%;
+    width: 100%;
+    background-color: var(--secondary-color, red);
+
+    &::after {
+      content: '';
+      position: relative;
+      display: block;
+
+      background-color: inherit;
+      opacity: 0;
+      transition: opacity 500ms;
+    }
+
+    &:hover::after {
+      opacity: 0.4;
+    }
+  }
+
+  &.rcc--horizontal {
+    height: 100%;
+    flex-direction: row;
+
+    .gutter {
+      cursor: col-resize;
+
+      &::after {
+        width: 15px;
+        height: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+  }
+
+  &.rcc--vertical {
+    width: 100%;
+    flex-direction: column;
+
+    .gutter {
+      cursor: row-resize;
+
+      &::after {
+        height: 15px;
+        width: 100%;
+        transform: translateY(calc(2.5px - 50%));
+      }
+    }
+  }
+}

@@ -1,8 +1,17 @@
+// modules
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { shuffle } from '../utils';
+
+// components
+import ResizableChildContainer from './common/ResizableChildContainer';
+import NavBar from './NavBar';
 import Player from './Player';
 
+// styles
+import '../style/MusicPlayer.scss';
+
+// Contexts
 import { useAudioState } from './contexts/AudioStateContext';
-import { shuffle } from '../utils';
 
 const voidSong: MusicPlayer.Song = {
   id: '',
@@ -82,16 +91,21 @@ export default function MusicPlayer() {
   }, [audioState.shuffleEnabled, playList]);
 
   return (
-    <div>
+    <div className="music-player">
+      <ResizableChildContainer
+        className="music-player__rcc"
+        direction="horizontal"
+        sizes={[20, 80]}
+        minSize={[250, 0]}
+        maxSize={[300, Infinity]}
+
+      >
+        <NavBar />
+        {/* <div className="child2" /> */}
       <button onClick={onLoadSong} type="button">
         Load Song
       </button>
-      <input
-        onClick={(e) => {
-          console.log(e);
-        }}
-        type="checkbox"
-      />
+      </ResizableChildContainer>
       <Player
         song={currentSong}
         shouldPlay={shouldPlay}

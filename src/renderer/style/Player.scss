@@ -29,20 +29,21 @@
   }
 }
 
-$current-player-height: 93px;
-
 /* Container */
 .player {
   padding: 0 1vw;
-  height: $current-player-height;
+  height: var(--current-player-height);
   width: 100%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
-  position: fixed;
-  bottom: 0;
+  position: relative;
+  z-index: 0;
+
+  // flex-grow: 0;
+  flex-shrink: 0;
 
   color: var(--primary-color);
   background-color: var(--secondary-color);
@@ -161,7 +162,7 @@ $current-player-height: 93px;
 
 /* Playback Buttons */
 .player__controller {
-  height: $current-player-height / 2;
+  height: calc(var(--current-player-height) / 2);
   width: 17vw;
   min-width: 200px;
 
@@ -198,7 +199,7 @@ $current-player-height: 93px;
   }
 
   div:nth-child(3) {
-    width: $current-player-height / 2;
+    width: calc(var(--current-player-height) / 2);
 
     button {
       @include muiRoundButton(2);
